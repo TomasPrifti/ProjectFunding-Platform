@@ -1,9 +1,5 @@
-import Header from '../components/header';
-import {contractAddresses, abi} from '../constants';
+import {contractAddresses, abi} from '@/constants/index';
 
 export default function Page() {
-	return <>
-		<Header></Header>
-		<h1>Hello, Next.js!</h1>
-	</>
+	return <h1>Hello, Next.js!</h1>
 }
