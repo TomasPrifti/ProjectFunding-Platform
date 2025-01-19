@@ -1,0 +1,13 @@
+.header {
+	@apply bg-blue-400;
+
+	nav {
+
+		@apply py-5 flex justify-around items-center;
+
+		.link-logo {
+
+			@apply flex justify-between items-center gap-2;
+		}
+	}
+}
