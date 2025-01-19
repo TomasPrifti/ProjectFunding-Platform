@@ -1,8 +1,8 @@
 'use client'
 
 import Head from "next/head";
-import { MoralisProvider } from "react-moralis";
-import "../styles/globals.css";
+import "@/styles/globals.css";
+import "@/styles/index.scss";
 
 import Header from '@/components/header';
 
@@ -16,10 +16,8 @@ export default function RootLayout({ children }) {
 			</Head>
 
 			<body>
-				<MoralisProvider initializeOnMount={false}>
-					<Header />
-					{children}
-				</MoralisProvider>
+				<Header />
+				{children}
 			</body>
 		</html>
 	)

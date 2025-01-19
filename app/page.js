@@ -1,5 +1,5 @@
 import {contractAddresses, abi} from '@/constants/index';
 
-export default function Page() {
+export default function Dashboard() {
 	return <h1>Hello, Next.js!</h1>
 }
