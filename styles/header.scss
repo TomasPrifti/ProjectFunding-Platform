@@ -1,13 +1,24 @@
 .header {
-	@apply bg-blue-400;
+	@apply sticky top-0 bg-blue-400 z-50;
 
 	nav {
 
-		@apply py-5 flex justify-around items-center;
+		@apply py-5 text-xl flex justify-around items-center;
 
 		.link-logo {
 
 			@apply flex justify-between items-center gap-2;
+
+			img {
+
+				@apply rounded-md;
+			}
+		}
+
+		a {
+
+			@apply p-4 rounded-lg;
+			@apply hover:bg-gray-500 hover:bg-opacity-40;
 		}
 	}
 }

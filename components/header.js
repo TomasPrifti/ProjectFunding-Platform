@@ -18,10 +18,10 @@ const Header = () => {
 				</Link>
 
 				<Link href="/newProject">
-					<button className="">Create a Project</button>
+					Create a Project
 				</Link>
 				<Link href="/listProjects">
-					<button className="">See all the Projects</button>
+					See all the Projects
 				</Link>
 
 				<Wallet />
