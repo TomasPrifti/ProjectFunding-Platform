@@ -2,12 +2,17 @@
 
 	h1 {
 
-		@apply text-6xl font-bold;
+		@apply text-6xl font-extrabold;
+	}
+
+	h2 {
+
+		@apply mt-2 text-4xl font-semibold;
 	}
 
 	p {
 
-		@apply mt-2 text-4xl font-medium;
+		@apply mt-8 w-2/5 text-2xl font-medium;
 	}
 
 	a {

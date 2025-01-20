@@ -4,8 +4,9 @@ const Dashboard = () => {
 	return (
 		<div className="dashboard">
 			<h1>ProjectFunding</h1>
+			<h2>Decentralized Crowdfunding Platform</h2>
 
-			<p>Decentralized Crowdfunding Platform</p>
+			<p>A Decentralized Platform where anyone can create their own Project and fund that of others</p>
 
 			<Link href="/newProject">
 				New Project
