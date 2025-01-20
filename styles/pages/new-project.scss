@@ -1,0 +1,37 @@
+.new-project {
+
+	h1 {
+
+		@apply text-6xl text-center font-bold;
+	}
+
+	.fields {
+
+		@apply pt-10 text-2xl flex flex-col gap-8;
+
+		.field {
+
+			label {
+
+				@apply inline-block w-1/2;
+			}
+
+			input,
+			textarea {
+
+				@apply rounded-lg;
+			}
+
+			&.field-description {
+
+				@apply flex items-start;
+			}
+		}
+	}
+
+	button {
+
+		@apply block w-fit mt-8 ml-auto text-2xl font-semibold p-4 rounded-2xl border-2 border-blue-800 bg-blue-500 text-white;
+		@apply hover:bg-blue-600;
+	}
+}

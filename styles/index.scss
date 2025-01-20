@@ -1,5 +1,9 @@
 @use "shared";
 
-@use "header";
-@use "dashboard";
-@use "wallet";
+/* Components */
+@use "components/header";
+@use "components/wallet";
+
+/* Pages */
+@use "pages/dashboard";
+@use "pages/new-project";
