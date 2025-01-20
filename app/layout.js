@@ -7,6 +7,13 @@ import "@/styles/index.scss";
 import Header from '@/components/header';
 
 export default function RootLayout({ children }) {
+	const backgroundImageStyle = {
+		backgroundImage: 'url(./dashboard.png)',
+		backgroundSize: 'cover',
+		backgroundPosition: 'center',
+		height: '100vh',
+	};
+
 	return (
 		<html lang="en">
 			<Head>
@@ -17,7 +24,13 @@ export default function RootLayout({ children }) {
 
 			<body>
 				<Header />
-				{children}
+				<main style={backgroundImageStyle}>
+					<div className="overlay">
+						<div className="container">
+							{children}
+						</div>
+					</div>
+				</main>
 			</body>
 		</html>
 	)

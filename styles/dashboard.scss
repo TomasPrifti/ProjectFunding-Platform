@@ -1,30 +1,18 @@
 .dashboard {
 
-	@apply relative;
+	h1 {
 
-	.overlay {
+		@apply text-6xl font-bold;
+	}
 
-		@apply absolute top-0 w-full h-full bg-black bg-opacity-60;
+	p {
 
-		.container {
+		@apply mt-2 text-4xl font-medium;
+	}
 
-			@apply mt-40 mx-auto pt-20 pb-10 px-16 rounded-2xl bg-white bg-opacity-70;
+	a {
 
-			h1 {
-
-				@apply text-6xl font-bold;
-			}
-
-			p {
-
-				@apply mt-2 text-4xl font-medium;
-			}
-
-			a {
-
-				@apply block w-fit mt-8 ml-auto text-2xl font-semibold p-4 rounded-2xl border-2 border-blue-800 bg-blue-500 text-white;
-				@apply hover:bg-blue-600;
-			}
-		}
+		@apply block w-fit mt-8 ml-auto text-2xl font-semibold p-4 rounded-2xl border-2 border-blue-800 bg-blue-500 text-white;
+		@apply hover:bg-blue-600;
 	}
 }
