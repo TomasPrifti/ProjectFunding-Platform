@@ -1,8 +1,12 @@
 .wallet {
-	@apply p-3 flex justify-between items-center gap-6 bg-blue-200;
 
 	.metamask-button {
 
-		@apply flex justify-between items-center gap-4;
+		@apply hover:bg-blue-100;
+	}
+
+	> :first-child {
+
+		@apply py-2 px-4 flex justify-between items-center gap-4 rounded-lg bg-blue-200;
 	}
 }

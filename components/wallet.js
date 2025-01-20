@@ -30,28 +30,17 @@ const Header = () => {
 		}
 	};
 
-	const disconnectWallet = () => {
-		setWalletAddress(null);
-	};
-
 	return (
 		<div className="wallet">
 			{walletAddress ? (
-				<>
-					<span>{network.toUpperCase()}</span>
-
-					<div>
+				<div className="logged">
+					<div className="tokens">
 						<div>{formatEther(balanceETH).slice(0, 8)} ETH</div>
 						<div>{formatUnits(balanceUSDT, 6)} USDT</div>
 					</div>
 
-					<button
-						className=""
-						onClick={disconnectWallet}
-					>
-						Disconnect <span>({walletAddress.slice(0, 6)}...{walletAddress.slice(-4)})</span>
-					</button>
-				</>
+					<span>{network.toUpperCase()} ({walletAddress.slice(0, 6)}...{walletAddress.slice(-4)})</span>
+				</div>
 			) : (
 				<button
 					className="metamask-button"
