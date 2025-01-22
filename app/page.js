@@ -8,6 +8,8 @@ const Dashboard = () => {
 
 			<p>A Decentralized Platform where anyone can create their own Project and fund that of others</p>
 
+			<em>~ “Empowering Ideas Through Decentralized Crowdfunding”</em>
+
 			<Link href="/newProject">
 				New Project
 			</Link>

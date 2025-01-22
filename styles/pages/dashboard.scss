@@ -15,9 +15,14 @@
 		@apply mt-8 w-2/5 text-2xl font-medium;
 	}
 
+	em {
+
+		@apply mt-8 block text-xl;
+	}
+
 	a {
 
-		@apply block w-fit mt-8 ml-auto text-2xl font-semibold p-4 rounded-2xl border-2 border-blue-800 bg-blue-500 text-white;
+		@apply block w-fit mt-4 ml-auto text-2xl font-semibold p-4 rounded-2xl border-2 border-blue-800 bg-blue-500 text-white;
 		@apply hover:bg-blue-600;
 	}
 }
