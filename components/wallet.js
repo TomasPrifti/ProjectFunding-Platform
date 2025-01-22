@@ -1,12 +1,13 @@
 import { ethers, formatEther, formatUnits } from "ethers";
-import React, { useState, useEffect } from "react";
-import Image from 'next/image'
+import { useEffect, useContext } from "react";
+import Image from 'next/image';
+import { UserContext } from '@/utils/context';
 
 const Wallet = () => {
-	const [walletAddress, setWalletAddress] = useState(null);
-	const [network, setNetwork] = useState('');
-	const [balanceETH, setBalanceETH] = useState(null);
-	const [balanceUSDT, setBalanceUSDT] = useState(null);
+	const {
+		user,
+		setUser
+	} = useContext(UserContext);
 
 	const setAllData = async (provider, accounts) => {
 		if (typeof window.ethereum === "undefined") {
@@ -27,10 +28,12 @@ const Wallet = () => {
 				window.location.reload();
 			})
 
-			setWalletAddress(accounts[0]);
-			setNetwork(network.name);
-			setBalanceETH(balanceETH);
-			setBalanceUSDT(balanceUSDT);
+			setUser({
+				address: accounts[0],
+				network: network.name,
+				balanceETH: balanceETH,
+				balanceUSDT: balanceUSDT,
+			});
 		} catch (error) {
 			console.error("Error in wallet connection:", error);
 		}
@@ -69,14 +72,14 @@ const Wallet = () => {
 
 	return (
 		<div className="wallet">
-			{walletAddress ? (
+			{user && user.address ? (
 				<div className="logged">
 					<div className="tokens">
-						<div>{formatEther(balanceETH).slice(0, 8)} ETH</div>
-						<div>{formatUnits(balanceUSDT, 6)} USDT</div>
+						<div>{formatEther(user.balanceETH).slice(0, 8)} ETH</div>
+						<div>{formatUnits(user.balanceUSDT, 6)} USDT</div>
 					</div>
 
-					<span>{network.toUpperCase()} ({walletAddress.slice(0, 6)}...{walletAddress.slice(-4)})</span>
+					<span>{user.network.toUpperCase()} ({user.address.slice(0, 6)}...{user.address.slice(-4)})</span>
 				</div>
 			) : (
 				<button

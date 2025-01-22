@@ -1,12 +1,16 @@
 'use client'
 
 import Head from "next/head";
+import { useState } from 'react';
+import Header from '@/components/header';
+import { UserContext } from '@/utils/context';
+
 import "@/styles/globals.css";
 import "@/styles/index.scss";
 
-import Header from '@/components/header';
-
 export default function RootLayout({ children }) {
+	const [user, setUser] = useState(null);
+
 	const backgroundImageStyle = {
 		backgroundImage: 'url(./dashboard.png)',
 		backgroundSize: 'cover',
@@ -23,14 +27,21 @@ export default function RootLayout({ children }) {
 			</Head>
 
 			<body>
-				<Header />
-				<main style={backgroundImageStyle}>
-					<div className="overlay">
-						<div className="container">
-							{children}
+				<UserContext.Provider
+					value={{
+						user,
+						setUser
+					}}
+				>
+					<Header />
+					<main style={backgroundImageStyle}>
+						<div className="overlay">
+							<div className="container">
+								{children}
+							</div>
 						</div>
-					</div>
-				</main>
+					</main>
+				</UserContext.Provider>
 			</body>
 		</html>
 	)

@@ -33,5 +33,10 @@
 
 		@apply block w-fit mt-8 ml-auto text-2xl font-semibold p-4 rounded-2xl border-2 border-blue-800 bg-blue-500 text-white;
 		@apply hover:bg-blue-600;
+
+		&.error {
+
+			@apply border-red-800 bg-red-800;
+		}
 	}
 }

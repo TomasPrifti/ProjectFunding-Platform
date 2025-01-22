@@ -13,6 +13,9 @@
       ],
       "@/constants/*": [
         "constants/*"
+      ],
+      "@/utils/*": [
+        "utils/*"
       ]
     }
   },
