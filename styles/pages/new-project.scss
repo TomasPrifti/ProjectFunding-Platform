@@ -19,7 +19,17 @@
 			input,
 			textarea {
 
-				@apply rounded-lg;
+				@apply py-1 px-2 rounded-lg border;
+
+				&.valid {
+
+					@apply border-green-500;
+				}
+
+				&.error {
+
+					@apply border-red-500;
+				}
 			}
 
 			&.field-description {
