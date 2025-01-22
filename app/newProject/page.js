@@ -78,7 +78,7 @@ const NewProject = () => {
 			const transactionReceipt = await transactionResponse.wait();
 			console.log(transactionReceipt);
 		} catch (error) {
-			console.error("Error in wallet connection:", error);
+			console.error("Error in sending transaction:", error);
 			return {
 				formData,
 			};
