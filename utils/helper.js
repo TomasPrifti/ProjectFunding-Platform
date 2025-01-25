@@ -105,3 +105,11 @@ export const validateField = (event) => {
 			break;
 	}
 };
+
+export const resetClasses = () => {
+	document.getElementById('name').className = "";
+	document.getElementById('description').className = "";
+	document.getElementById('expiration').className = "";
+	document.getElementById('goal').className = "";
+	document.getElementById('min-capital').className = "";
+}

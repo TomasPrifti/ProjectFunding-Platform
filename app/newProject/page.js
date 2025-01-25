@@ -2,10 +2,11 @@
 
 import { ethers } from "ethers";
 import Form from 'next/form'
-import { useContext, useActionState } from 'react';
+import { useContext, useActionState, useRef, useState } from 'react';
 import { contractAddresses, abi } from '@/constants/index';
+import NotificationPopup from '@/components/notification-popup';
 import { UserContext } from '@/utils/context';
-import { validateField, performValidation } from '@/utils/helper';
+import { validateField, performValidation, resetClasses } from '@/utils/helper';
 
 const NewProject = () => {
 	const {
@@ -15,10 +16,21 @@ const NewProject = () => {
 
 	const buttonLabel = user?.address ? "Create Project" : "NOT CONNECTED";
 	const buttonClass = user?.address ? "" : "error";
+	const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+	const notificationText = useRef("");
+	const notificationClasses = useRef("");
+
+	const notifyUser = (text = "Something happen", classes = "") => {
+		setShowNotificationPopup(true);
+		notificationText.current = text;
+		notificationClasses.current = classes;
+	}
 
 	const createProject = async (previousState, formData) => {
 		if (typeof window.ethereum === "undefined") {
 			console.error("MetaMask doesn't exist.");
+			notifyUser("MetaMask doesn't exist.", "error");
+
 			return {
 				formData,
 			};
@@ -34,12 +46,16 @@ const NewProject = () => {
 			const contractCode = await provider.getCode(contractAddresses['31337']);
 			if (contractCode === "0x") {
 				console.error("Error: The main contract doesn't exist");
+				notifyUser("Error: The main contract doesn't exist", "error");
+
 				return {
 					formData,
 				};
 			}
 		} catch (error) {
 			console.error("Error in wallet connection:", error);
+			notifyUser("Error in wallet connection", "error");
+
 			return {
 				formData,
 			};
@@ -58,6 +74,8 @@ const NewProject = () => {
 		// Validate and Convert data.
 		const result = performValidation(args);
 		if (!result) {
+			notifyUser("Inputs not valid", "error");
+
 			return {
 				formData,
 			};
@@ -72,17 +90,20 @@ const NewProject = () => {
 				args.goal,
 				args.minCapital,
 			);
-			console.log(transactionResponse);
 
 			// Awaiting confirmations.
 			const transactionReceipt = await transactionResponse.wait();
-			console.log(transactionReceipt);
 		} catch (error) {
 			console.error("Error in sending transaction:", error);
+			notifyUser("Error in sending transaction", "error");
+
 			return {
 				formData,
 			};
 		}
+
+		resetClasses();
+		notifyUser("Project created successfully", "success");
 
 		return {
 			formData: new FormData(),
@@ -126,6 +147,9 @@ const NewProject = () => {
 				<button type="submit" className={buttonClass} disabled={!user?.address}>{buttonLabel}</button>
 			</Form>
 
+			<NotificationPopup showNotificationPopup={showNotificationPopup} setShowNotificationPopup={setShowNotificationPopup} classes={notificationClasses.current}>
+				{notificationText.current}
+			</NotificationPopup>
 		</div>
 	);
 }

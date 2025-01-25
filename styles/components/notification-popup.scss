@@ -1,0 +1,24 @@
+.notification-popup {
+
+	@apply flex items-center gap-5 fixed top-44 -right-full px-8 py-6 text-xl font-medium rounded-xl bg-blue-100 border border-white z-50 transition-all ease-in-out delay-150 duration-700 shadow-2xl;
+
+	img {
+
+		@apply rounded-full;
+	}
+
+	&.show {
+
+		@apply right-1/4;
+	}
+
+	&.success {
+
+		@apply bg-green-400;
+	}
+
+	&.error {
+
+		@apply bg-red-500;
+	}
+}
