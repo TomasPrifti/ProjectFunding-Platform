@@ -5,6 +5,12 @@
 
 		@apply py-5 text-xl flex justify-around items-center;
 
+		> * {
+			
+			@apply rounded-lg bg-blue-300 border border-black;
+			@apply hover:bg-blue-100;
+		}
+
 		.link-logo {
 
 			@apply flex justify-between items-center gap-2;
@@ -17,8 +23,7 @@
 
 		a {
 
-			@apply p-4 rounded-lg;
-			@apply hover:bg-gray-500 hover:bg-opacity-40;
+			@apply p-4;
 		}
 	}
 }
