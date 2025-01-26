@@ -73,13 +73,17 @@ const ListProjects = () => {
 		<div className="list-projects">
 			<h1>All Projects</h1>
 
-			<div className="grid-projects">
-				{projects.map((project) => {
-					return (
-						<ProjectCard key={project.address} project={project} />
-					);
-				})}
-			</div>
+			{projects.length > 0 ? (
+				<div className="grid-projects">
+					{projects.map((project) => {
+						return (
+							<ProjectCard key={project.address} project={project} />
+						);
+					})}
+				</div>
+			) : (
+				<h2>No projects currently available</h2>
+			)}
 		</div>
 	);
 }

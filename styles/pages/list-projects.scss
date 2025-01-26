@@ -5,6 +5,11 @@
 		@apply mb-10 text-6xl text-center font-bold;
 	}
 
+	h2 {
+
+		@apply text-3xl text-center font-medium;
+	}
+
 	.grid-projects {
 
 		@apply grid grid-cols-1 gap-6 p-4;
