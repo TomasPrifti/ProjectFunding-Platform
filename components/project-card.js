@@ -1,8 +1,14 @@
 import { formatUnits } from "ethers";
+import Link from "next/link";
 
 const ProjectCard = ({ project }) => {
+	const hrefData = {
+		pathname: '/getProject',
+		query: { address: project.address },
+	};
+
 	return (
-		<div className="project-card">
+		<Link href={hrefData} className="project-card">
 			<h2 className="name">{project.name}</h2>
 			<p className="description">{project.description}</p>
 
@@ -16,7 +22,7 @@ const ProjectCard = ({ project }) => {
 				<p><span>Target wallet:</span> {project.targetWallet.slice(0, 6)}...{project.targetWallet.slice(-4)}</p>
 				<p><span>Status:</span> {project.status}</p>
 			</div>
-		</div>
+		</Link>
 	);
 };
 
