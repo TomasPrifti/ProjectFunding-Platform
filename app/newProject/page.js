@@ -43,7 +43,7 @@ const NewProject = () => {
 			signer = await provider.getSigner();
 
 			// Check if the contract Manager is deployed.
-			const contractCode = await provider.getCode(contractAddresses["31337"]["Manager"]);
+			const contractCode = await provider.getCode(contractAddresses[user.chainId]["Manager"]);
 			if (contractCode === "0x") {
 				console.error("Error: The main contract doesn't exist");
 				notifyUser("Error: The main contract doesn't exist", "error");
@@ -61,7 +61,7 @@ const NewProject = () => {
 			};
 		}
 		// Retrieve the contract Manager already deployed.
-		const manager = new ethers.Contract(contractAddresses["31337"]["Manager"], abi["31337"]["Manager"], signer)
+		const manager = new ethers.Contract(contractAddresses[user.chainId]["Manager"], abi[user.chainId]["Manager"], signer)
 
 		// Define the parameters to create the new Project.
 		const args = {};

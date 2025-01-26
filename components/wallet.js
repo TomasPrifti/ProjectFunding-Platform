@@ -31,6 +31,7 @@ const Wallet = () => {
 			setUser({
 				address: accounts[0],
 				network: network.name,
+				chainId: network.chainId,
 				balanceETH: balanceETH,
 				balanceUSDT: balanceUSDT,
 			});
