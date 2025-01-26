@@ -4,7 +4,9 @@
 @use "components/header";
 @use "components/wallet";
 @use "components/notification-popup";
+@use "components/project-card";
 
 /* Pages */
 @use "pages/dashboard";
 @use "pages/new-project";
+@use "pages/list-projects";

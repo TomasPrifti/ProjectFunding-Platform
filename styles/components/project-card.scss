@@ -1,0 +1,25 @@
+.project-card {
+
+	@apply p-4 rounded-2xl border border-gray-200 bg-gray-50 shadow-md transition-transform transform cursor-pointer;
+	@apply hover:shadow-lg hover:-translate-y-2 hover:border-black;
+
+	.name {
+
+		@apply mb-2 text-2xl font-bold text-gray-800;
+	}
+
+	.description {
+
+		@apply mb-4 text-lg text-gray-600;
+	}
+
+	.details {
+
+		@apply space-y-2 text-base text-gray-700;
+
+		span {
+
+			@apply font-medium;
+		}
+	}
+}

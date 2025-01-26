@@ -1,0 +1,14 @@
+.list-projects {
+
+	h1 {
+
+		@apply mb-10 text-6xl text-center font-bold;
+	}
+
+	.grid-projects {
+
+		@apply grid grid-cols-1 gap-6 p-4;
+		@apply sm:grid-cols-2;
+		@apply lg:grid-cols-3;
+	}
+}
