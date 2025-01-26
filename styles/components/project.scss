@@ -1,16 +1,16 @@
-.project-card {
+.project {
 
 	@apply p-4 rounded-2xl border border-gray-200 bg-gray-50 shadow-md transition-transform transform cursor-pointer;
 	@apply hover:shadow-lg hover:-translate-y-2 hover:border-black;
 
 	.name {
 
-		@apply mb-2 text-2xl font-bold text-gray-800;
+		@apply mb-2 text-2xl text-center font-bold text-gray-800;
 	}
 
 	.description {
 
-		@apply mb-4 text-lg text-gray-600;
+		@apply mb-8 text-lg text-gray-600;
 	}
 
 	.details {

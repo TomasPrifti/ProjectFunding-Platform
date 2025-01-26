@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { abi } from "@/constants/index";
 import { UserContext } from "@/utils/context";
-import ProjectCard from "@/components/project-card";
+import Project from "@/components/project";
 
 const GetProject = () => {
 	const {
@@ -62,7 +62,7 @@ const GetProject = () => {
 	return (
 		<div className="get-project">
 			{project ? (
-				<ProjectCard key={project.address} project={project} />
+				<Project key={project.address} project={project} view="full"/>
 			) : (
 				<h1>This project doesn't exist !</h1>
 			)}

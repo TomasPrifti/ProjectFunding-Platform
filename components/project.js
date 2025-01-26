@@ -1,14 +1,14 @@
 import { formatUnits } from "ethers";
 import Link from "next/link";
 
-const ProjectCard = ({ project }) => {
+const Project = ({ project, view }) => {
 	const hrefData = {
 		pathname: '/getProject',
 		query: { address: project.address },
 	};
 
 	return (
-		<Link href={hrefData} className="project-card">
+		<Link href={hrefData} className="project">
 			<h2 className="name">{project.name}</h2>
 			<p className="description">{project.description}</p>
 
@@ -26,4 +26,4 @@ const ProjectCard = ({ project }) => {
 	);
 };
 
-export default ProjectCard;
+export default Project;

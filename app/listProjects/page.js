@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import { useContext, useEffect, useState } from "react";
 import { contractAddresses, abi } from "@/constants/index";
 import { UserContext } from "@/utils/context";
-import ProjectCard from "@/components/project-card";
+import Project from "@/components/project";
 
 const ListProjects = () => {
 	const {
@@ -77,7 +77,7 @@ const ListProjects = () => {
 				<div className="grid-projects">
 					{projects.map((project) => {
 						return (
-							<ProjectCard key={project.address} project={project} />
+							<Project key={project.address} project={project} view="card"/>
 						);
 					})}
 				</div>
