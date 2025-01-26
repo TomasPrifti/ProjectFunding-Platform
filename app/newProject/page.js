@@ -1,12 +1,12 @@
-'use client'
+"use client"
 
 import { ethers } from "ethers";
-import Form from 'next/form'
-import { useContext, useActionState, useRef, useState } from 'react';
-import { contractAddresses, abi } from '@/constants/index';
-import NotificationPopup from '@/components/notification-popup';
-import { UserContext } from '@/utils/context';
-import { validateField, performValidation, resetClasses } from '@/utils/helper';
+import Form from "next/form"
+import { useContext, useActionState, useRef, useState } from "react";
+import { contractAddresses, abi } from "@/constants/index";
+import NotificationPopup from "@/components/notification-popup";
+import { UserContext } from "@/utils/context";
+import { validateField, performValidation, resetClasses } from "@/utils/helper";
 
 const NewProject = () => {
 	const {
@@ -43,7 +43,7 @@ const NewProject = () => {
 			signer = await provider.getSigner();
 
 			// Check if the contract Manager is deployed.
-			const contractCode = await provider.getCode(contractAddresses['31337']);
+			const contractCode = await provider.getCode(contractAddresses["31337"]["Manager"]);
 			if (contractCode === "0x") {
 				console.error("Error: The main contract doesn't exist");
 				notifyUser("Error: The main contract doesn't exist", "error");
@@ -61,7 +61,7 @@ const NewProject = () => {
 			};
 		}
 		// Retrieve the contract Manager already deployed.
-		const manager = new ethers.Contract(contractAddresses['31337'], abi['31337'], signer)
+		const manager = new ethers.Contract(contractAddresses["31337"]["Manager"], abi["31337"]["Manager"], signer)
 
 		// Define the parameters to create the new Project.
 		const args = {};
