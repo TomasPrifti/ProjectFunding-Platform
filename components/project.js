@@ -11,8 +11,10 @@ const Project = ({ project, view = "card" }) => {
 		<>
 			{view === "card" && (
 				<Link href={hrefData} className="project view-card">
-					<h2 className="name">{project.name}</h2>
-					<p className="description">{project.description}</p>
+					<div>
+						<h2 className="name">{project.name}</h2>
+						<p className="description">{project.description}</p>
+					</div>
 
 					<div className="details">
 						<p><span>Expiration time:</span> {new Date(parseInt(project.expiration) * 1000).toLocaleDateString()}</p>

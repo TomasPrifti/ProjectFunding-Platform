@@ -24,7 +24,7 @@
 
 	&.view-card {
 
-		@apply border-gray-200 transition-transform transform cursor-pointer;
+		@apply flex flex-col justify-between border-gray-200 transition-transform transform cursor-pointer;
 		@apply hover:shadow-lg hover:-translate-y-2 hover:border-black;
 
 		.name {
@@ -32,9 +32,9 @@
 			@apply mb-2;
 		}
 
-		.description {
+		.details {
 
-			@apply mb-8;
+			@apply mt-10;
 		}
 	}
 
