@@ -119,14 +119,14 @@ const GetProject = () => {
 			};
 		}
 
-		inputField.className = "";
-		notifyUser("Project funded successfully", "success");
-
 		// Updating Project's information.
 		project.status = await project.contract.getStatus();
 		project.currentBalance = await project.contract.getUSDTBalance();
 		project.myCapitalInvested = await project.contract.getMyCapitalInvested();
 		setProject(project);
+
+		inputField.className = "";
+		notifyUser("Project funded successfully", "success");
 
 		return {
 			formData: new FormData(),
