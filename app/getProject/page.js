@@ -4,7 +4,7 @@ import { ethers, formatUnits } from "ethers";
 import Form from "next/form"
 import { useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState, useActionState, useRef } from "react";
-import { abi } from "@/constants/index";
+import { contractAddresses, abi } from "@/constants/index";
 import { UserContext } from "@/utils/context";
 import Project from "@/components/project";
 import NotificationPopup from "@/components/notification-popup";
@@ -17,6 +17,7 @@ const GetProject = () => {
 
 	const searchParams = useSearchParams();
 	const [project, setProject] = useState(null);
+	const [usdt, setUsdt] = useState(null);
 	const [signer, setSigner] = useState(null);
 
 	const buttonLabel = user?.address ? "Fund Project" : "NOT CONNECTED";
@@ -48,7 +49,8 @@ const GetProject = () => {
 			return;
 		}
 		// Retrieve the contract Project already deployed.
-		const project = new ethers.Contract(address, abi[user.chainId]["Project"], signer)
+		const project = new ethers.Contract(address, abi[user.chainId]["Project"], signer);
+		const usdt = new ethers.Contract(contractAddresses[user.chainId]["USDT"], abi[user.chainId]["USDT"], signer);
 
 		const obj = {
 			contract: project,
@@ -64,6 +66,7 @@ const GetProject = () => {
 			myCapitalInvested: await project.getMyCapitalInvested(),
 		};
 
+		setUsdt(usdt);
 		setProject(obj);
 	}
 
@@ -96,10 +99,34 @@ const GetProject = () => {
 
 		args.capitalToInvest = args.capitalToInvest * 10 ** 6; // Conversion in USDT.
 
-		// TODO: manage sendTransaction to fund the Project.
+		try {
+			// Approving user's allowance.
+			await usdt.approve(project.address, args.capitalToInvest);
+
+			// Sending transaction.
+			const transactionResponse = await project.contract.fundProject(
+				args.capitalToInvest,
+			);
+
+			// Awaiting confirmations.
+			const transactionReceipt = await transactionResponse.wait();
+		} catch (error) {
+			console.error("Error in sending transaction:", error);
+			notifyUser("Error in sending transaction", "error");
+
+			return {
+				formData,
+			};
+		}
 
 		inputField.className = "";
 		notifyUser("Project funded successfully", "success");
+
+		// Updating Project's information.
+		project.status = await project.contract.getStatus();
+		project.currentBalance = await project.contract.getUSDTBalance();
+		project.myCapitalInvested = await project.contract.getMyCapitalInvested();
+		setProject(project);
 
 		return {
 			formData: new FormData(),
