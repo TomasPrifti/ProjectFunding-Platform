@@ -2,6 +2,7 @@ import { ethers, formatEther, formatUnits } from "ethers";
 import { useEffect, useContext } from "react";
 import Image from 'next/image';
 import { UserContext } from '@/utils/context';
+import { contractAddresses, abi } from "@/constants/index";
 
 const Wallet = () => {
 	const {
@@ -18,8 +19,9 @@ const Wallet = () => {
 		try {
 			const network = await provider.getNetwork();
 			const balanceETH = await provider.getBalance(accounts[0]);
-			//const balanceUSDT = await provider.getBalance("ethers.usdt");
-			const balanceUSDT = 0n;
+
+			const usdt = new ethers.Contract(contractAddresses[network.chainId]["USDT"], abi[network.chainId]["USDT"], provider);
+			const balanceUSDT = await usdt.balanceOf(accounts[0]);
 
 			window.ethereum.on('chainChanged', () => {
 				window.location.reload();
