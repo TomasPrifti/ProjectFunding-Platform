@@ -20,8 +20,10 @@ const Project = ({ project, view = "card" }) => {
 						<p><span>Expiration time:</span> {new Date(parseInt(project.expiration) * 1000).toLocaleDateString()}</p>
 						<p><span>Goal:</span> {formatUnits(project.goal, 6)} USDT</p>
 						<p><span>Minimum capital to invest:</span> {formatUnits(project.minCapital, 6)} USDT</p>
-						<p><span>Current capital invested:</span> {formatUnits(project.currentBalance, 6)} USDT</p>
-						<p><span>Status:</span> {project.status}</p>
+						{project.status === "Active" && (
+							<p><span>Current capital invested:</span> {formatUnits(project.currentBalance, 6)} USDT</p>
+						)}
+						<p className={`status ${project.status.toLowerCase()}`}><span>Status:</span> {project.status}</p>
 					</div>
 				</Link>
 			)}
@@ -42,9 +44,13 @@ const Project = ({ project, view = "card" }) => {
 							<p><span>Target wallet:</span> {project.targetWallet}</p>
 						</div>
 
-						<p><span>Current capital invested:</span> {formatUnits(project.currentBalance, 6)} USDT</p>
+						{project.status === "Active" && (
+							<p><span>Current capital invested:</span> {formatUnits(project.currentBalance, 6)} USDT</p>
+						) || (
+							<span></span>
+						)}
 
-						<p><span>Status:</span> {project.status}</p>
+						<p className={`status ${project.status.toLowerCase()}`}><span>Status:</span> {project.status}</p>
 					</div>
 				</div>
 			)}

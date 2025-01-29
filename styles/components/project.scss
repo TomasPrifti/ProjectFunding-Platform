@@ -18,7 +18,22 @@
 
 		span {
 
-			@apply font-medium;
+			@apply text-gray-700 font-semibold;
+		}
+
+		.status {
+
+			@apply font-semibold;
+
+			&.funded {
+
+				@apply text-green-500;
+			}
+
+			&.expired {
+
+				@apply text-red-500;
+			}
 		}
 	}
 

@@ -36,10 +36,10 @@ const NewProject = () => {
 			};
 		}
 
-		let signer;
+		let provider, signer;
 
 		try {
-			const provider = new ethers.BrowserProvider(window.ethereum);
+			provider = new ethers.BrowserProvider(window.ethereum);
 			signer = await provider.getSigner();
 
 			// Check if the contract Manager is deployed.
@@ -101,6 +101,13 @@ const NewProject = () => {
 				formData,
 			};
 		}
+
+		// Updating User's information.
+		user.balanceETH = await provider.getBalance(user.address);
+		setUser({
+			...user,
+			balanceETH: user.balanceETH,
+		});
 
 		resetClasses();
 		notifyUser("Project created successfully", "success");

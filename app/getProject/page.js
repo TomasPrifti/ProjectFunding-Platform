@@ -18,6 +18,7 @@ const GetProject = () => {
 	const searchParams = useSearchParams();
 	const [project, setProject] = useState(null);
 	const [usdt, setUsdt] = useState(null);
+	const [provider, setProvider] = useState(null);
 	const [signer, setSigner] = useState(null);
 
 	const buttonLabel = user?.address ? "Fund Project" : "NOT CONNECTED";
@@ -43,6 +44,8 @@ const GetProject = () => {
 		try {
 			const provider = new ethers.BrowserProvider(window.ethereum);
 			signer = await provider.getSigner();
+
+			setProvider(provider);
 			setSigner(signer);
 		} catch (error) {
 			console.error("Error in wallet connection:", error);
@@ -125,6 +128,15 @@ const GetProject = () => {
 		project.myCapitalInvested = await project.contract.getMyCapitalInvested();
 		setProject(project);
 
+		// Updating User's information.
+		user.balanceETH = await provider.getBalance(user.address);
+		user.balanceUSDT = await usdt.balanceOf(user.address);
+		setUser({
+			...user,
+			balanceETH: user.balanceETH,
+			balanceUSDT: user.balanceUSDT,
+		});
+
 		inputField.className = "";
 		notifyUser("Project funded successfully", "success");
 
@@ -148,7 +160,7 @@ const GetProject = () => {
 		}
 
 		getProjectData(address);
-	}, [user]);
+	}, [user?.chainId, user?.address]);
 
 	const [state, formAction] = useActionState(fundProject, {
 		formData: new FormData(),
@@ -160,22 +172,26 @@ const GetProject = () => {
 				<>
 					<Project key={project.address} project={project} view="full" />
 
-					<Form action={formAction} className="fields">
-						<div>
-							<p><span>I've invested:</span> {formatUnits(project.myCapitalInvested, 6)} USDT</p>
+					{project.status === "Active" && (
+						<>
+							<Form action={formAction} className="fields">
+								<div>
+									<p><span>I've invested:</span> {formatUnits(project.myCapitalInvested, 6)} USDT</p>
 
-							<div className="field field-capital-to-invest">
-								<label htmlFor="capital-to-invest">How much USDT would you like to invest?</label>
-								<input type="number" id="capital-to-invest" name="capital-to-invest" step="1" min="1" onChange={validateValue} defaultValue={state.formData.get("capital-to-invest")} />
-							</div>
-						</div>
+									<div className="field field-capital-to-invest">
+										<label htmlFor="capital-to-invest">How much USDT would you like to invest?</label>
+										<input type="number" id="capital-to-invest" name="capital-to-invest" step="1" min="1" onChange={validateValue} defaultValue={state.formData.get("capital-to-invest")} />
+									</div>
+								</div>
 
-						<button type="submit" className={buttonClass} disabled={!user?.address}>{buttonLabel}</button>
-					</Form>
+								<button type="submit" className={buttonClass} disabled={!user?.address}>{buttonLabel}</button>
+							</Form>
 
-					<NotificationPopup showNotificationPopup={showNotificationPopup} setShowNotificationPopup={setShowNotificationPopup} classes={notificationClasses.current}>
-						{notificationText.current}
-					</NotificationPopup>
+							<NotificationPopup showNotificationPopup={showNotificationPopup} setShowNotificationPopup={setShowNotificationPopup} classes={notificationClasses.current}>
+								{notificationText.current}
+							</NotificationPopup>
+						</>
+					)}
 				</>
 			) : (
 				<h1>This project doesn't exist !</h1>
