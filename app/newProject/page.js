@@ -2,9 +2,10 @@
 
 import { ethers } from "ethers";
 import Form from "next/form"
-import { useContext, useActionState, useRef, useState } from "react";
+import { useContext, useActionState, useRef, useState, useEffect } from "react";
 import { contractAddresses, abi } from "@/constants/index";
 import NotificationPopup from "@/components/notification-popup";
+import EtherscanInfo from "@/components/etherscan-info";
 import { UserContext } from "@/utils/context";
 import { validateField, performValidation, resetClasses } from "@/utils/helper";
 
@@ -16,6 +17,7 @@ const NewProject = () => {
 
 	const buttonLabel = user?.address ? "Create Project" : "NOT CONNECTED";
 	const buttonClass = user?.address ? "" : "error";
+	const [managerContractAddress, setManagerContractAddress] = useState("");
 	const [showNotificationPopup, setShowNotificationPopup] = useState(false);
 	const notificationText = useRef("");
 	const notificationClasses = useRef("");
@@ -27,6 +29,11 @@ const NewProject = () => {
 	}
 
 	const createProject = async (previousState, formData) => {
+		// The Contract Address is not defined.
+		if (!managerContractAddress || managerContractAddress.length === 0) {
+			return;
+		}
+
 		if (typeof window.ethereum === "undefined") {
 			console.error("MetaMask doesn't exist.");
 			notifyUser("MetaMask doesn't exist.", "error");
@@ -36,14 +43,12 @@ const NewProject = () => {
 			};
 		}
 
-		let provider, signer;
+		const provider = user.provider;
+		const signer = user.signer;
 
 		try {
-			provider = new ethers.BrowserProvider(window.ethereum);
-			signer = await provider.getSigner();
-
 			// Check if the contract Manager is deployed.
-			const contractCode = await provider.getCode(contractAddresses[user.chainId]["Manager"]);
+			const contractCode = await provider.getCode(managerContractAddress);
 			if (contractCode === "0x") {
 				console.error("Error: The main contract doesn't exist");
 				notifyUser("Error: The main contract doesn't exist", "error");
@@ -61,7 +66,7 @@ const NewProject = () => {
 			};
 		}
 		// Retrieve the contract Manager already deployed.
-		const manager = new ethers.Contract(contractAddresses[user.chainId]["Manager"], abi[user.chainId]["Manager"], signer)
+		const manager = new ethers.Contract(managerContractAddress, abi[user.chainId]["Manager"], signer)
 
 		// Define the parameters to create the new Project.
 		const args = {};
@@ -117,6 +122,14 @@ const NewProject = () => {
 		};
 	}
 
+	useEffect(() => {
+		if (!user?.chainId) {
+			return;
+		}
+
+		setManagerContractAddress(contractAddresses[user.chainId]["Manager"]);
+	}, [user]);
+
 	const [state, formAction] = useActionState(createProject, {
 		formData: new FormData(),
 	});
@@ -153,6 +166,8 @@ const NewProject = () => {
 
 				<button type="submit" className={buttonClass} disabled={!user?.address}>{buttonLabel}</button>
 			</Form>
+
+			<EtherscanInfo contractAddress={managerContractAddress} />
 
 			<NotificationPopup showNotificationPopup={showNotificationPopup} setShowNotificationPopup={setShowNotificationPopup} classes={notificationClasses.current}>
 				{notificationText.current}
