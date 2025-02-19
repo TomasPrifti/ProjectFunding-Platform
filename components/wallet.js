@@ -17,6 +17,7 @@ const Wallet = () => {
 		}
 
 		try {
+			const signer = await provider.getSigner();
 			const network = await provider.getNetwork();
 			const balanceETH = await provider.getBalance(accounts[0]);
 
@@ -32,6 +33,8 @@ const Wallet = () => {
 
 			setUser({
 				address: accounts[0],
+				provider: provider,
+				signer: signer,
 				network: network.name,
 				chainId: network.chainId,
 				balanceETH: balanceETH,
