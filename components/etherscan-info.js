@@ -10,9 +10,9 @@ const EtherscanInfo = ({ contractAddress }) => {
 	} = useContext(UserContext);
 
 	const [etherscanBaseUrl, setEtherscanBaseUrl] = useState("");
-	const [transactionHash, setTransactionHash] = useState("");
+	const [transactionHashDeployment, setTransactionHashDeployment] = useState("");
 
-	const getTransactionHash = async () => {
+	const getEtherscanInfo = async () => {
 		const provider = user.provider;
 
 		try {
@@ -36,7 +36,7 @@ const EtherscanInfo = ({ contractAddress }) => {
 					const tx = await provider.getTransaction(txHash);
 					// Check if the transaction is a deployment one.
 					if (tx.to === null) {
-						setTransactionHash(tx.hash);
+						setTransactionHashDeployment(tx.hash);
 						return;
 					}
 				}
@@ -60,7 +60,7 @@ const EtherscanInfo = ({ contractAddress }) => {
 		}
 
 		setEtherscanBaseUrl(etherscanLink[user.chainId]);
-		getTransactionHash();
+		getEtherscanInfo();
 	}, [contractAddress]);
 
 	if (etherscanBaseUrl.length == 0) {
@@ -73,7 +73,7 @@ const EtherscanInfo = ({ contractAddress }) => {
 
 			<ul>
 				<li>
-					<Link href={`${etherscanBaseUrl}tx/${transactionHash}`}>
+					<Link href={`${etherscanBaseUrl}tx/${transactionHashDeployment}`}>
 						Transaction
 					</Link>
 				</li>
