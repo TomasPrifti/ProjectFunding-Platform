@@ -57,14 +57,24 @@
 
 		@apply p-8;
 
-		.name {
+		.main-details {
 
-			@apply my-4 text-6xl;
-		}
+			@apply grid grid-cols-2;
 
-		.description {
+			.name {
 
-			@apply mt-8 mb-14 text-xl;
+				@apply my-4 text-6xl;
+			}
+
+			.description {
+
+				@apply mt-8 mb-14 text-xl;
+			}
+
+			.etherscan-info {
+
+				@apply items-end mr-6;
+			}
 		}
 
 		.details {

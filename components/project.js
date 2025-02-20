@@ -1,5 +1,6 @@
 import { formatUnits } from "ethers";
 import Link from "next/link";
+import EtherscanInfo from "@/components/etherscan-info";
 
 const Project = ({ project, view = "card" }) => {
 	const hrefData = {
@@ -29,8 +30,13 @@ const Project = ({ project, view = "card" }) => {
 			)}
 			{view === "full" && (
 				<div className="project view-full">
-					<h1 className="name">{project.name}</h1>
-					<p className="description">{project.description}</p>
+					<div className="main-details">
+						<h1 className="name">{project.name}</h1>
+						
+						<EtherscanInfo contractAddress={project.address} />
+						
+						<p className="description">{project.description}</p>
+					</div>
 
 					<div className="details">
 						<div>
@@ -47,8 +53,8 @@ const Project = ({ project, view = "card" }) => {
 						{project.status === "Active" && (
 							<p><span>Current capital invested:</span> {formatUnits(project.currentBalance, 6)} USDT</p>
 						) || (
-							<span></span>
-						)}
+								<span></span>
+							)}
 
 						<p className={`status ${project.status.toLowerCase()}`}><span>Status:</span> {project.status}</p>
 					</div>
