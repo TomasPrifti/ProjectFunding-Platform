@@ -71,12 +71,18 @@ const EtherscanInfo = ({ contractAddress }) => {
 		<div className="etherscan-info">
 			<div>See on Etherscan:</div>
 
-			<Link href={`${etherscanBaseUrl}tx/${transactionHash}`}>
-				Transaction
-			</Link>
-			<Link href={`${etherscanBaseUrl}address/${contractAddress}`}>
-				Contract
-			</Link>
+			<ul>
+				<li>
+					<Link href={`${etherscanBaseUrl}tx/${transactionHash}`}>
+						Transaction
+					</Link>
+				</li>
+				<li>
+					<Link href={`${etherscanBaseUrl}address/${contractAddress}`}>
+						Contract
+					</Link>
+				</li>
+			</ul>
 		</div>
 	);
 };

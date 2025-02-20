@@ -1,0 +1,20 @@
+.etherscan-info {
+
+	@apply flex flex-col text-lg;
+
+	ul {
+
+		@apply mt-2 ml-8;
+
+		li {
+
+			@apply list-item list-disc;
+
+			a {
+
+				@apply font-semibold text-blue-600;
+				@apply hover:text-blue-800;
+			}
+		}
+	}
+}
