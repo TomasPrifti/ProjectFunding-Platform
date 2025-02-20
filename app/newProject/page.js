@@ -167,7 +167,9 @@ const NewProject = () => {
 				<button type="submit" className={buttonClass} disabled={!user?.address}>{buttonLabel}</button>
 			</Form>
 
-			<EtherscanInfo contractAddress={managerContractAddress} />
+			<EtherscanInfo contractAddress={managerContractAddress} view="contract" />
+
+			<EtherscanInfo contractAddress={managerContractAddress} view="transactions" />
 
 			<NotificationPopup showNotificationPopup={showNotificationPopup} setShowNotificationPopup={setShowNotificationPopup} classes={notificationClasses.current}>
 				{notificationText.current}

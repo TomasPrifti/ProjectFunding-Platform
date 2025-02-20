@@ -8,6 +8,7 @@ import { contractAddresses, abi } from "@/constants/index";
 import { UserContext } from "@/utils/context";
 import Project from "@/components/project";
 import NotificationPopup from "@/components/notification-popup";
+import EtherscanInfo from "@/components/etherscan-info";
 
 const GetProject = () => {
 	const {
@@ -192,6 +193,8 @@ const GetProject = () => {
 							</NotificationPopup>
 						</>
 					)}
+
+					<EtherscanInfo contractAddress={project.address} view="transactions" />
 				</>
 			) : (
 				<h1>This project doesn't exist !</h1>

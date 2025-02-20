@@ -73,7 +73,10 @@
 
 			.etherscan-info {
 
-				@apply items-end mr-6;
+				&.contract {
+
+					@apply items-end mr-6;
+				}
 			}
 		}
 

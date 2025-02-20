@@ -1,19 +1,59 @@
 .etherscan-info {
 
-	@apply flex flex-col text-lg;
+	a {
 
-	ul {
+		@apply font-semibold text-blue-600;
+		@apply hover:text-blue-800;
+	}
 
-		@apply mt-2 ml-8;
+	&.contract {
 
-		li {
+		@apply flex flex-col text-lg;
 
-			@apply list-item list-disc;
+		ul {
 
-			a {
+			@apply mt-2 ml-8;
 
-				@apply font-semibold text-blue-600;
-				@apply hover:text-blue-800;
+			li {
+
+				@apply list-item list-disc;
+
+
+			}
+		}
+	}
+
+	&.transactions {
+
+		@apply mt-10;
+
+		h2 {
+
+			@apply py-2 text-3xl text-center font-bold rounded-t-lg border-2 border-black;
+		}
+
+		.list-transactions {
+
+			@apply overflow-y-scroll rounded-b-lg border border-black;
+
+			.transaction {
+
+				@apply px-4 py-2 grid grid-cols-3 border border-black;
+			}
+
+			&::-webkit-scrollbar-track {
+
+				@apply rounded-xl bg-black bg-opacity-50;
+			}
+
+			&::-webkit-scrollbar {
+
+				@apply w-3;
+			}
+
+			&::-webkit-scrollbar-thumb {
+
+				@apply rounded-xl shadow-md bg-black bg-opacity-70;
 			}
 		}
 	}
