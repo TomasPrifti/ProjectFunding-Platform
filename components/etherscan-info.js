@@ -122,7 +122,7 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 									<Link href={`${etherscanBaseUrl}tx/${transaction.hash}`}>
 										See on Etherscan
 									</Link>
-									<span>Block hash: {transaction.blockHash.slice(0, 6)}...{transaction.blockHash.slice(-4)}</span>
+									<span>Block hash: {transaction.blockHash ? transaction.blockHash.slice(0, 6) + "..." + transaction.blockHash.slice(-4) : ""}</span>
 									<span>To: {transaction.to ? transaction.to.slice(0, 6) + "..." + transaction.to.slice(-4) : "Contract Deployment"}</span>
 								</div>
 							);
