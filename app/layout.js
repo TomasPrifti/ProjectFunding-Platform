@@ -13,9 +13,6 @@ export default function RootLayout({ children }) {
 
 	const backgroundImageStyle = {
 		backgroundImage: 'url(./dashboard.png)',
-		backgroundSize: 'cover',
-		backgroundPosition: 'center',
-		height: '100vh',
 	};
 
 	return (

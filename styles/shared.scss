@@ -1,6 +1,6 @@
 main {
 
-	@apply relative;
+	@apply relative bg-cover bg-center h-[2000px];
 
 	.overlay {
 
@@ -8,7 +8,7 @@ main {
 
 		.container {
 
-			@apply mt-60 mx-auto py-20 px-16 rounded-2xl bg-white bg-opacity-70;
+			@apply mt-80 mx-auto py-20 px-16 rounded-2xl bg-white bg-opacity-70;
 		}
 	}
 }
