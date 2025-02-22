@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from 'next/image';
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/utils/context";
 import { etherscanLink } from "@/constants/index";
@@ -73,7 +74,7 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 	}
 
 	useEffect(() => {
-		if (!user?.chainId || etherscanLink[user?.chainId]?.length == 0) {
+		if (!user?.chainId) {
 			return;
 		}
 		// The Contract Address is not defined.
@@ -84,10 +85,6 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 		setEtherscanBaseUrl(etherscanLink[user.chainId]);
 		getEtherscanInfo();
 	}, [contractAddress]);
-
-	if (etherscanBaseUrl.length == 0) {
-		return;
-	}
 
 	return (
 		<>
@@ -111,7 +108,17 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 			)}
 			{view === "transactions" && (
 				<div className="etherscan-info transactions">
-					<h2>Contract Transactions ({listTransactions.length})</h2>
+					<div className="title-container">
+						<h2>Contract Transactions ({listTransactions.length})</h2>
+
+						<Image
+							src="/reload.png"
+							width={35}
+							height={35}
+							alt="Reload Transactions History"
+							onClick={getEtherscanInfo}
+						/>
+					</div>
 
 					<div className="list-transactions">
 						{listTransactions.map((transaction) => {

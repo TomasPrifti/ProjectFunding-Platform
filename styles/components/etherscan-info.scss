@@ -25,9 +25,19 @@
 
 		@apply mt-10;
 
-		h2 {
+		.title-container {
 
-			@apply py-2 text-3xl text-center font-bold rounded-t-lg border-2 border-black;
+			@apply relative rounded-t-lg border-2 border-black;
+
+			h2 {
+				
+				@apply py-2 text-3xl text-center font-bold;
+			}
+
+			img {
+
+				@apply absolute top-2 bottom-2 right-2 rounded-2xl cursor-pointer;
+			}
 		}
 
 		.list-transactions {
