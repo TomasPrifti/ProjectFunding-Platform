@@ -63,13 +63,14 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 			while (blockNumber >= 0) {
 				const block = await provider.getBlock(blockNumber, true);
 
-				// Searching where the transaction has no target address (property "to").
 				for (const txHash of block.transactions) {
 					const tx = await provider.getTransaction(txHash);
 
+					// Check if the transaction refers to the current contract.
 					if (tx.to === contractAddress) {
 						tempListTransactions.push(tx);
 					}
+					// Check if the transaction refers to the deployment transaction of the current contract.
 					if (tx.hash === transactionHashDeployment) {
 						tempListTransactions.push(tx);
 					}
