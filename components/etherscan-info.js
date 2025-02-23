@@ -2,7 +2,8 @@ import Link from "next/link";
 import Image from 'next/image';
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/utils/context";
-import { etherscanLink } from "@/constants/index";
+import { etherscan } from "@/constants/index";
+require('dotenv').config();
 
 const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 	const {
@@ -11,15 +12,37 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 	} = useContext(UserContext);
 
 	const [etherscanBaseUrl, setEtherscanBaseUrl] = useState("");
+	const [etherscanEndpoint, setEtherscanEndpoint] = useState("");
 	const [transactionDeployment, setTransactionDeployment] = useState(null);
 	const [listTransactions, setListTransactions] = useState([]);
 
-	const getEtherscanInfo = async () => {
+	const getEtherscanInfoContract = async () => {
+		if (process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY === "") {
+			return;
+		}
+
+		// Creating the url to request data to Etherscan.
+		let url = "";
+		url += etherscanEndpoint;
+		url += "?module=contract";
+		url += "&action=getcontractcreation";
+		url += `&contractaddresses=${contractAddress}`;
+		url += `&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`;
+		const response = await fetch(url);
+		const data = await response.json();
+
+		if (!data || data["message"] != "OK") {
+			return;
+		}
+		setTransactionDeployment(data["result"]["txHash"]);
+	}
+
+	const getEtherscanInfoTransactions = async () => {
 		const provider = user.provider;
 
 		try {
-			// Check if the contract Manager is deployed.
-			const contractCode = await provider.getCode(contractAddress);
+			// Check if the contract is deployed.
+			const contractCode = await user.provider.getCode(contractAddress);
 			if (contractCode === "0x") {
 				console.error("Error: The main contract doesn't exist");
 				return;
@@ -29,7 +52,6 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 			const latestBlock = await provider.getBlock("latest");
 			let blockNumber = latestBlock.number;
 
-			let tempTransactionDeployment;
 			const tempListTransactions = [];
 
 			// Searching trought all the blocks going backward to find the deployment's one.
@@ -40,32 +62,16 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 				for (const txHash of block.transactions) {
 					const tx = await provider.getTransaction(txHash);
 
-					// Check if the transaction is a deployment one.
-					if (tx.to === null) {
-						tempTransactionDeployment = tx;
-					}
-
 					if (tx.to === contractAddress) {
-						tempTransactionDeployment = null;
-						if (view == "contract") {
-							continue;
-						}
-
-						if (view == "transactions") {
-							tempListTransactions.push(tx);
-						}
+						tempListTransactions.push(tx);
 					}
 				}
 
 				// Go to the previous block.
 				blockNumber--;
 			}
-			if (view == "contract") {
-				setTransactionDeployment(tempTransactionDeployment);
-				return;
-			}
 
-			tempListTransactions.push(tempTransactionDeployment);
+			tempListTransactions.push(transactionDeployment);
 			setListTransactions(tempListTransactions);
 		} catch (error) {
 			console.error("Error: ", error);
@@ -81,9 +87,20 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 		if (!contractAddress || contractAddress.length === 0) {
 			return;
 		}
+		if (etherscan["endpoint"][user.chainId] === "" || etherscan["link"][user.chainId] === "") {
+			return;
+		}
+		setEtherscanEndpoint(etherscan["endpoint"][user.chainId]);
+		setEtherscanBaseUrl(etherscan["link"][user.chainId]);
 
-		setEtherscanBaseUrl(etherscanLink[user.chainId]);
-		getEtherscanInfo();
+		getEtherscanInfoContract();
+		if (view == "contract") {
+			return;
+		}
+		if (view == "transactions") {
+			getEtherscanInfoTransactions();
+			return;
+		}
 	}, [contractAddress]);
 
 	return (
@@ -116,7 +133,7 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 							width={35}
 							height={35}
 							alt="Reload Transactions History"
-							onClick={getEtherscanInfo}
+							onClick={getEtherscanInfoTransactions}
 						/>
 					</div>
 
