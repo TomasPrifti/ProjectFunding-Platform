@@ -66,6 +66,10 @@ const ListProjects = () => {
 		if (!user?.chainId) {
 			return;
 		}
+		if(contractAddresses[user.chainId]["Manager"] === "") {
+			return;
+		}
+		
 		getAllProjects();
 	}, [user]);
 
