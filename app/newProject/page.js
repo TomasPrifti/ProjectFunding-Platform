@@ -29,11 +29,6 @@ const NewProject = () => {
 	}
 
 	const createProject = async (previousState, formData) => {
-		// The Contract Address is not defined.
-		if (!managerContractAddress || managerContractAddress.length === 0) {
-			return;
-		}
-
 		if (typeof window.ethereum === "undefined") {
 			console.error("MetaMask doesn't exist.");
 			notifyUser("MetaMask doesn't exist.", "error");
@@ -58,8 +53,8 @@ const NewProject = () => {
 				};
 			}
 		} catch (error) {
-			console.error("Error in wallet connection:", error);
-			notifyUser("Error in wallet connection", "error");
+			console.error("Error: The main contract doesn't exist:", error);
+			notifyUser("Error: The main contract doesn't exist", "error");
 
 			return {
 				formData,
@@ -124,6 +119,9 @@ const NewProject = () => {
 
 	useEffect(() => {
 		if (!user?.chainId) {
+			return;
+		}
+		if (contractAddresses[user.chainId]["Manager"] === "") {
 			return;
 		}
 
