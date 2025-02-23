@@ -13,13 +13,18 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 
 	const [etherscanBaseUrl, setEtherscanBaseUrl] = useState("");
 	const [etherscanEndpoint, setEtherscanEndpoint] = useState("");
-	const [transactionDeployment, setTransactionDeployment] = useState(null);
+	const [transactionHashDeployment, setTransactionHashDeployment] = useState("");
 	const [listTransactions, setListTransactions] = useState([]);
 
 	const getEtherscanInfoContract = async () => {
 		if (process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY === "") {
 			return;
 		}
+		if (etherscan["endpoint"][user.chainId] === "" || etherscan["link"][user.chainId] === "") {
+			return;
+		}
+		setEtherscanEndpoint(etherscan["endpoint"][user.chainId]);
+		setEtherscanBaseUrl(etherscan["link"][user.chainId]);
 
 		// Creating the url to request data to Etherscan.
 		let url = "";
@@ -34,7 +39,7 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 		if (!data || data["message"] != "OK") {
 			return;
 		}
-		setTransactionDeployment(data["result"]["txHash"]);
+		setTransactionHashDeployment(data["result"]["txHash"]);
 	}
 
 	const getEtherscanInfoTransactions = async () => {
@@ -65,13 +70,15 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 					if (tx.to === contractAddress) {
 						tempListTransactions.push(tx);
 					}
+					if (tx.hash === transactionHashDeployment) {
+						tempListTransactions.push(tx);
+					}
 				}
 
 				// Go to the previous block.
 				blockNumber--;
 			}
 
-			tempListTransactions.push(transactionDeployment);
 			setListTransactions(tempListTransactions);
 		} catch (error) {
 			console.error("Error: ", error);
@@ -87,11 +94,6 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 		if (!contractAddress || contractAddress.length === 0) {
 			return;
 		}
-		if (etherscan["endpoint"][user.chainId] === "" || etherscan["link"][user.chainId] === "") {
-			return;
-		}
-		setEtherscanEndpoint(etherscan["endpoint"][user.chainId]);
-		setEtherscanBaseUrl(etherscan["link"][user.chainId]);
 
 		getEtherscanInfoContract();
 		if (view == "contract") {
@@ -111,7 +113,7 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 
 					<ul>
 						<li>
-							<Link href={`${etherscanBaseUrl}tx/${transactionDeployment?.hash}`}>
+							<Link href={`${etherscanBaseUrl}tx/${transactionHashDeployment}`}>
 								Transaction
 							</Link>
 						</li>
