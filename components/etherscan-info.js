@@ -17,18 +17,9 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 	const [listTransactions, setListTransactions] = useState([]);
 
 	const getEtherscanInfoContract = async () => {
-		if (process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY === "") {
-			return;
-		}
-		if (etherscan["endpoint"][user.chainId] === "" || etherscan["link"][user.chainId] === "") {
-			return;
-		}
-		setEtherscanEndpoint(etherscan["endpoint"][user.chainId]);
-		setEtherscanBaseUrl(etherscan["link"][user.chainId]);
-
 		// Creating the url to request data to Etherscan.
 		let url = "";
-		url += etherscanEndpoint;
+		url += etherscan["endpoint"][user.chainId];
 		url += "?module=contract";
 		url += "&action=getcontractcreation";
 		url += `&contractaddresses=${contractAddress}`;
@@ -36,14 +27,33 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 		const response = await fetch(url);
 		const data = await response.json();
 
-		if (!data || data["message"] != "OK") {
+		if (!data || data["message"] != "OK" || data["result"].length === 0) {
 			return;
 		}
-		setTransactionHashDeployment(data["result"]["txHash"]);
+		setTransactionHashDeployment(data["result"][0]["txHash"]);
 	}
 
 	const getEtherscanInfoTransactions = async () => {
 		const provider = user.provider;
+
+		// Creating the url to request data to Etherscan.
+		let url = "";
+		url += etherscan["endpoint"][user.chainId];
+		url += "?module=account";
+		url += "&action=txlistinternal";
+		url += `&address=${contractAddress}`;
+		url += "&startblock=0";
+		url += "&endblock=99999999";
+		url += "&page=1";
+		url += "&offset=100";
+		url += "&sort=desc";
+		url += `&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`;
+		const response = await fetch(url);
+		const data = await response.json();
+
+		if (!data || data["message"] != "OK" || data["result"].length === 0) {
+			return;
+		}
 
 		try {
 			// Check if the contract is deployed.
@@ -53,31 +63,16 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 				return;
 			}
 
-			// Get the latest block deployed on the chain.
-			const latestBlock = await provider.getBlock("latest");
-			let blockNumber = latestBlock.number;
-
 			const tempListTransactions = [];
 
-			// Searching trought all the blocks going backward to find the deployment's one.
-			while (blockNumber >= 0) {
-				const block = await provider.getBlock(blockNumber, true);
-
-				for (const txHash of block.transactions) {
-					const tx = await provider.getTransaction(txHash);
-
-					// Check if the transaction refers to the current contract.
-					if (tx.to === contractAddress) {
-						tempListTransactions.push(tx);
-					}
-					// Check if the transaction refers to the deployment transaction of the current contract.
-					if (tx.hash === transactionHashDeployment) {
-						tempListTransactions.push(tx);
-					}
-				}
-
-				// Go to the previous block.
-				blockNumber--;
+			// Getting all the transactions from the internal ones.
+			for (const internalTransaction of data.result) {
+				const tx = await provider.getTransaction(internalTransaction.hash);
+				tempListTransactions.push(tx);
+			}
+			if (transactionHashDeployment !== "") {
+				const deploymentTx = await provider.getTransaction(transactionHashDeployment);
+				tempListTransactions.push(deploymentTx);
 			}
 
 			setListTransactions(tempListTransactions);
@@ -95,6 +90,14 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 		if (!contractAddress || contractAddress.length === 0) {
 			return;
 		}
+		if (process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY === "") {
+			return;
+		}
+		if (etherscan["endpoint"][user.chainId] === "" || etherscan["link"][user.chainId] === "") {
+			return;
+		}
+		setEtherscanEndpoint(etherscan["endpoint"][user.chainId]);
+		setEtherscanBaseUrl(etherscan["link"][user.chainId]);
 
 		getEtherscanInfoContract();
 		if (view == "contract") {
@@ -104,7 +107,7 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 			getEtherscanInfoTransactions();
 			return;
 		}
-	}, [contractAddress]);
+	}, [contractAddress, transactionHashDeployment]);
 
 	return (
 		<>
