@@ -9,6 +9,7 @@ import { UserContext } from "@/utils/context";
 import Project from "@/components/project";
 import NotificationPopup from "@/components/notification-popup";
 import EtherscanInfo from "@/components/etherscan-info";
+import Loader from '@/components/loader';
 
 const GetProject = () => {
 	const {
@@ -21,6 +22,7 @@ const GetProject = () => {
 	const [usdt, setUsdt] = useState(null);
 	const [provider, setProvider] = useState(null);
 	const [signer, setSigner] = useState(null);
+	const [loading, setLoading] = useState(true);
 
 	const buttonLabel = user?.address ? "Fund Project" : "NOT CONNECTED";
 	const buttonClass = user?.address ? "" : "error";
@@ -50,28 +52,34 @@ const GetProject = () => {
 			setSigner(signer);
 		} catch (error) {
 			console.error("Error in wallet connection:", error);
+			setLoading(false);
 			return;
 		}
 		// Retrieve the contract Project already deployed.
 		const project = new ethers.Contract(address, abi[user.chainId]["Project"], signer);
 		const usdt = new ethers.Contract(contractAddresses[user.chainId]["USDT"], abi[user.chainId]["USDT"], signer);
 
-		const obj = {
-			contract: project,
-			address: project.target,
-			name: await project.getName(),
-			description: await project.getDescription(),
-			expiration: await project.getExpiration(),
-			goal: await project.getGoal(),
-			minCapital: await project.getMinCapital(),
-			targetWallet: await project.getTargetWallet(),
-			status: await project.getStatus(),
-			currentBalance: await project.getUSDTBalance(),
-			myCapitalInvested: await project.getMyCapitalInvested(),
-		};
-
-		setUsdt(usdt);
-		setProject(obj);
+		try {
+			const obj = {
+				contract: project,
+				address: project.target,
+				name: await project.getName(),
+				description: await project.getDescription(),
+				expiration: await project.getExpiration(),
+				goal: await project.getGoal(),
+				minCapital: await project.getMinCapital(),
+				targetWallet: await project.getTargetWallet(),
+				status: await project.getStatus(),
+				currentBalance: await project.getUSDTBalance(),
+				myCapitalInvested: await project.getMyCapitalInvested(),
+			};
+			setUsdt(usdt);
+			setProject(obj);
+		} catch (error) {
+			console.error("Error in contract retrieved:", error);
+		} finally {
+			setLoading(false);
+		}
 	}
 
 	const fundProject = async (previousState, formData) => {
@@ -169,35 +177,37 @@ const GetProject = () => {
 
 	return (
 		<div className="get-project">
-			{project ? (
-				<>
-					<Project key={project.address} project={project} view="full" />
+			{loading && <Loader /> || (
+				project ? (
+					<>
+						<Project key={project.address} project={project} view="full" />
 
-					{project.status === "Active" && (
-						<>
-							<Form action={formAction} className="fields">
-								<div>
-									<p><span>I've invested:</span> {formatUnits(project.myCapitalInvested, 6)} USDT</p>
+						{project.status === "Active" && (
+							<>
+								<Form action={formAction} className="fields">
+									<div>
+										<p><span>I've invested:</span> {formatUnits(project.myCapitalInvested, 6)} USDT</p>
 
-									<div className="field field-capital-to-invest">
-										<label htmlFor="capital-to-invest">How much USDT would you like to invest?</label>
-										<input type="number" id="capital-to-invest" name="capital-to-invest" step="1" min="1" onChange={validateValue} defaultValue={state.formData.get("capital-to-invest")} />
+										<div className="field field-capital-to-invest">
+											<label htmlFor="capital-to-invest">How much USDT would you like to invest?</label>
+											<input type="number" id="capital-to-invest" name="capital-to-invest" step="1" min="1" onChange={validateValue} defaultValue={state.formData.get("capital-to-invest")} />
+										</div>
 									</div>
-								</div>
 
-								<button type="submit" className={buttonClass} disabled={!user?.address}>{buttonLabel}</button>
-							</Form>
+									<button type="submit" className={buttonClass} disabled={!user?.address}>{buttonLabel}</button>
+								</Form>
 
-							<NotificationPopup showNotificationPopup={showNotificationPopup} setShowNotificationPopup={setShowNotificationPopup} classes={notificationClasses.current}>
-								{notificationText.current}
-							</NotificationPopup>
-						</>
-					)}
+								<NotificationPopup showNotificationPopup={showNotificationPopup} setShowNotificationPopup={setShowNotificationPopup} classes={notificationClasses.current}>
+									{notificationText.current}
+								</NotificationPopup>
+							</>
+						)}
 
-					<EtherscanInfo contractAddress={project.address} view="transactions" />
-				</>
-			) : (
-				<h1>This project doesn't exist !</h1>
+						<EtherscanInfo contractAddress={project.address} view="transactions" />
+					</>
+				) : (
+					<h1>This project doesn't exist !</h1>
+				)
 			)}
 		</div>
 	);
