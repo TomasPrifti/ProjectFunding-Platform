@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { contractAddresses, abi } from "@/constants/index";
 import { UserContext } from "@/utils/context";
 import Project from "@/components/project";
+import Loader from '@/components/loader';
 
 const ListProjects = () => {
 	const {
@@ -13,6 +14,7 @@ const ListProjects = () => {
 	} = useContext(UserContext);
 
 	const [projects, setProjects] = useState([]);
+	const [loading, setLoading] = useState(true);
 
 	const getAllProjects = async () => {
 		if (typeof window.ethereum === "undefined") {
@@ -60,16 +62,17 @@ const ListProjects = () => {
 		}
 
 		setProjects(tempProjects);
+		setLoading(false);
 	}
 
 	useEffect(() => {
 		if (!user?.chainId) {
 			return;
 		}
-		if(contractAddresses[user.chainId]["Manager"] === "") {
+		if (contractAddresses[user.chainId]["Manager"] === "") {
 			return;
 		}
-		
+
 		getAllProjects();
 	}, [user]);
 
@@ -79,7 +82,7 @@ const ListProjects = () => {
 
 			{user?.address ? (
 				<>
-					{
+					{loading && <Loader /> || (
 						projects.length > 0 ? (
 							<div className="grid-projects">
 								{projects.map((project) => {
@@ -91,7 +94,7 @@ const ListProjects = () => {
 						) : (
 							<h2>No projects currently available</h2>
 						)
-					}
+					)}
 				</>
 			) : (
 				<h2>Connect wallet to see all the projects available</h2>
