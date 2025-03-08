@@ -203,7 +203,7 @@ const GetProject = () => {
 							</>
 						)}
 
-						<EtherscanInfo contractAddress={project.address} view="transactions" />
+						<EtherscanInfo contractAddress={project.address} view="transactions" type="Project" />
 					</>
 				) : (
 					<h1>This project doesn't exist !</h1>
