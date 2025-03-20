@@ -5,7 +5,7 @@ import { UserContext } from "@/utils/context";
 import { etherscan } from "@/constants/index";
 require('dotenv').config();
 
-const EtherscanInfo = ({ contractAddress, view = "contract", type = "Project" }) => {
+const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 	const {
 		user,
 		setUser
@@ -44,7 +44,7 @@ const EtherscanInfo = ({ contractAddress, view = "contract", type = "Project" })
 		let url = "";
 		url += etherscan["endpoint"][user.chainId];
 		url += "?module=account";
-		url += "&action=txlistinternal";
+		url += "&action=txlist";
 		url += `&address=${contractAddress}`;
 		url += "&startblock=0";
 		url += "&endblock=99999999";
@@ -74,7 +74,7 @@ const EtherscanInfo = ({ contractAddress, view = "contract", type = "Project" })
 				const tx = await provider.getTransaction(internalTransaction.hash);
 				tempListTransactions.push(tx);
 			}
-			if (type === "Manager" && transactionHashDeployment !== "") {
+			if (transactionHashDeployment !== "") {
 				const deploymentTx = await provider.getTransaction(transactionHashDeployment);
 				tempListTransactions.push(deploymentTx);
 			}
@@ -111,7 +111,7 @@ const EtherscanInfo = ({ contractAddress, view = "contract", type = "Project" })
 			getEtherscanInfoTransactions();
 			return;
 		}
-	}, [contractAddress, transactionHashDeployment]);
+	}, [contractAddress]);
 
 	return (
 		<>

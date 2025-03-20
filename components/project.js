@@ -33,7 +33,7 @@ const Project = ({ project, view = "card" }) => {
 					<div className="main-details">
 						<h1 className="name">{project.name}</h1>
 
-						<EtherscanInfo contractAddress={project.address} view = "contract" type="Project"/>
+						<EtherscanInfo contractAddress={project.address} view = "contract" />
 
 						<p className="description">{project.description}</p>
 					</div>

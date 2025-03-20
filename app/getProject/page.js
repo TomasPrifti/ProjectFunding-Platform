@@ -169,7 +169,7 @@ const GetProject = () => {
 		}
 
 		getProjectData(address);
-	}, [user?.chainId, user?.address]);
+	}, [user?.chainId]);
 
 	const [state, formAction] = useActionState(fundProject, {
 		formData: new FormData(),
@@ -203,7 +203,7 @@ const GetProject = () => {
 							</>
 						)}
 
-						<EtherscanInfo contractAddress={project.address} view="transactions" type="Project" />
+						<EtherscanInfo contractAddress={project.address} view="transactions" />
 					</>
 				) : (
 					<h1>This project doesn't exist !</h1>
