@@ -20,8 +20,6 @@ const GetProject = () => {
 	const searchParams = useSearchParams();
 	const [project, setProject] = useState(null);
 	const [usdt, setUsdt] = useState(null);
-	const [provider, setProvider] = useState(null);
-	const [signer, setSigner] = useState(null);
 	const [loading, setLoading] = useState(true);
 
 	const buttonLabel = user?.address ? "Fund Project" : "NOT CONNECTED";
@@ -42,17 +40,20 @@ const GetProject = () => {
 			return;
 		}
 
-		let signer;
+		const provider = user.provider;
+		const signer = user.signer;
 
 		try {
-			const provider = new ethers.BrowserProvider(window.ethereum);
-			signer = await provider.getSigner();
-
-			setProvider(provider);
-			setSigner(signer);
+			// Check if the contract Project exist.
+			const contractCode = await provider.getCode(address);
+			if (contractCode === "0x") {
+				console.error("Error: The project contract doesn't exist");
+				notifyUser("Error: The project contract doesn't exist", "error");
+				return;
+			}
 		} catch (error) {
-			console.error("Error in wallet connection:", error);
-			setLoading(false);
+			console.error("Error: The project contract doesn't exist:", error);
+			notifyUser("Error: The project contract doesn't exist", "error");
 			return;
 		}
 		// Retrieve the contract Project already deployed.
@@ -65,11 +66,7 @@ const GetProject = () => {
 				address: project.target,
 				name: await project.getName(),
 				description: await project.getDescription(),
-				expiration: await project.getExpiration(),
-				goal: await project.getGoal(),
 				minCapital: await project.getMinCapital(),
-				targetWallet: await project.getTargetWallet(),
-				status: await project.getStatus(),
 				currentBalance: await project.getUSDTBalance(),
 				myCapitalInvested: await project.getMyCapitalInvested(),
 			};
@@ -132,13 +129,12 @@ const GetProject = () => {
 		}
 
 		// Updating Project's information.
-		project.status = await project.contract.getStatus();
 		project.currentBalance = await project.contract.getUSDTBalance();
 		project.myCapitalInvested = await project.contract.getMyCapitalInvested();
 		setProject(project);
 
 		// Updating User's information.
-		user.balanceETH = await provider.getBalance(user.address);
+		user.balanceETH = await user.provider.getBalance(user.address);
 		user.balanceUSDT = await usdt.balanceOf(user.address);
 		setUser({
 			...user,
@@ -182,26 +178,22 @@ const GetProject = () => {
 					<>
 						<Project key={project.address} project={project} view="full" />
 
-						{project.status === "Active" && (
-							<>
-								<Form action={formAction} className="fields">
-									<div>
-										<p><span>I've invested:</span> {formatUnits(project.myCapitalInvested, 6)} USDT</p>
+						<Form action={formAction} className="fields">
+							<div>
+								<p><span>I've invested:</span> {formatUnits(project.myCapitalInvested, 6)} USDT</p>
 
-										<div className="field field-capital-to-invest">
-											<label htmlFor="capital-to-invest">How much USDT would you like to invest?</label>
-											<input type="number" id="capital-to-invest" name="capital-to-invest" step="1" min="1" onChange={validateValue} defaultValue={state.formData.get("capital-to-invest")} />
-										</div>
-									</div>
+								<div className="field field-capital-to-invest">
+									<label htmlFor="capital-to-invest">How much USDT would you like to invest?</label>
+									<input type="number" id="capital-to-invest" name="capital-to-invest" step="1" min="1" onChange={validateValue} defaultValue={state.formData.get("capital-to-invest")} />
+								</div>
+							</div>
 
-									<button type="submit" className={buttonClass} disabled={!user?.address}>{buttonLabel}</button>
-								</Form>
+							<button type="submit" className={buttonClass} disabled={!user?.address}>{buttonLabel}</button>
+						</Form>
 
-								<NotificationPopup showNotificationPopup={showNotificationPopup} setShowNotificationPopup={setShowNotificationPopup} classes={notificationClasses.current}>
-									{notificationText.current}
-								</NotificationPopup>
-							</>
-						)}
+						<NotificationPopup showNotificationPopup={showNotificationPopup} setShowNotificationPopup={setShowNotificationPopup} classes={notificationClasses.current}>
+							{notificationText.current}
+						</NotificationPopup>
 
 						<EtherscanInfo contractAddress={project.address} view="transactions" />
 					</>

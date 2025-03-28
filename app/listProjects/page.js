@@ -22,11 +22,9 @@ const ListProjects = () => {
 			return;
 		}
 
-		let provider;
+		const provider = user.provider;
 
 		try {
-			provider = new ethers.BrowserProvider(window.ethereum);
-
 			// Check if the contract Manager is deployed.
 			const contractCode = await provider.getCode(contractAddresses[user.chainId]["Manager"]);
 			if (contractCode === "0x") {
@@ -49,13 +47,8 @@ const ListProjects = () => {
 				address: project.target,
 				name: await project.getName(),
 				description: await project.getDescription(),
-				expiration: await project.getExpiration(),
-				goal: await project.getGoal(),
 				minCapital: await project.getMinCapital(),
-				targetWallet: await project.getTargetWallet(),
-				status: await project.getStatus(),
-				currentBalance: await project.getUSDTBalance(),
-				myCapitalInvested: await project.getMyCapitalInvested(),
+				currentBalance: await project.getUSDTBalance()
 			};
 
 			tempProjects.push(obj);

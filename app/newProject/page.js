@@ -67,8 +67,6 @@ const NewProject = () => {
 		const args = {};
 		args.name = formData.get("name");
 		args.description = formData.get("description");
-		args.expiration = parseInt(formData.get("expiration"));
-		args.goal = parseInt(formData.get("goal"));
 		args.minCapital = parseInt(formData.get("min-capital"));
 
 		// Validate and Convert data.
@@ -86,8 +84,6 @@ const NewProject = () => {
 			const transactionResponse = await manager.createProject(
 				args.name,
 				args.description,
-				args.expiration,
-				args.goal,
 				args.minCapital,
 			);
 
@@ -145,16 +141,6 @@ const NewProject = () => {
 				<div className="field field-description">
 					<label htmlFor="description">Description</label>
 					<textarea id="description" name="description" rows="3" cols="35" onChange={validateField} defaultValue={state.formData.get("description")} />
-				</div>
-
-				<div className="field field-expiration">
-					<label htmlFor="expiration">Expiration Time(specify days)</label>
-					<input type="number" id="expiration" name="expiration" step="1" min="1" onChange={validateField} defaultValue={state.formData.get("expiration")} />
-				</div>
-
-				<div className="field field-goal">
-					<label htmlFor="goal">Goal (specify USDT)</label>
-					<input type="number" id="goal" name="goal" step="1" min="1" onChange={validateField} defaultValue={state.formData.get("goal")} />
 				</div>
 
 				<div className="field field-min-capital">
