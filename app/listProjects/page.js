@@ -48,7 +48,8 @@ const ListProjects = () => {
 				name: await project.getName(),
 				description: await project.getDescription(),
 				minCapital: await project.getMinCapital(),
-				currentBalance: await project.getUSDTBalance()
+				currentBalance: await project.getUSDTBalance(),
+				transactionCount: await project.getTransactionCount()
 			};
 
 			tempProjects.push(obj);

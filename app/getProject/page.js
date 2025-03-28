@@ -67,8 +67,10 @@ const GetProject = () => {
 				name: await project.getName(),
 				description: await project.getDescription(),
 				minCapital: await project.getMinCapital(),
+				owner: await project.getOwner(),
 				currentBalance: await project.getUSDTBalance(),
 				myCapitalInvested: await project.getMyCapitalInvested(),
+				transactionCount: await project.getTransactionCount()
 			};
 			setUsdt(usdt);
 			setProject(obj);

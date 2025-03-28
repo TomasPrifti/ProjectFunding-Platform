@@ -18,8 +18,8 @@ const Project = ({ project, view = "card" }) => {
 					</div>
 
 					<div className="details">
+						<p><span>Number of transactions:</span> {project.transactionCount}</p>
 						<p><span>Minimum capital to invest:</span> {formatUnits(project.minCapital, 6)} USDT</p>
-
 						<p><span>Current balance:</span> {formatUnits(project.currentBalance, 6)} USDT</p>
 					</div>
 				</Link>
@@ -35,7 +35,12 @@ const Project = ({ project, view = "card" }) => {
 					</div>
 
 					<div className="details">
-						<p><span>Address:</span> {project.address}</p>
+						<div>
+							<p><span>Owner:</span> {project.owner}</p>
+							<p><span>Address:</span> {project.address}</p>
+						</div>
+
+						<p><span>Number of transactions:</span> {project.transactionCount}</p>
 
 						<p><span>Minimum capital to invest:</span> {formatUnits(project.minCapital, 6)} USDT</p>
 						<p><span>Current balance:</span> {formatUnits(project.currentBalance, 6)} USDT</p>
