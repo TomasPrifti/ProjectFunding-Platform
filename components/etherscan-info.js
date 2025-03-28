@@ -136,7 +136,7 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 			{view === "transactions" && (
 				<div className="etherscan-info transactions">
 					<div className="title-container">
-						<h2>Contract Transactions ({listTransactions.length})</h2>
+						<h2>Etherscan Information ({listTransactions.length})</h2>
 
 						<Image
 							src="/reload.png"
