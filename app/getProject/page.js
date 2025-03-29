@@ -49,11 +49,13 @@ const GetProject = () => {
 			if (contractCode === "0x") {
 				console.error("Error: The project contract doesn't exist");
 				notifyUser("Error: The project contract doesn't exist", "error");
+				setLoading(false);
 				return;
 			}
 		} catch (error) {
 			console.error("Error: The project contract doesn't exist:", error);
 			notifyUser("Error: The project contract doesn't exist", "error");
+			setLoading(false);
 			return;
 		}
 		// Retrieve the contract Project already deployed.
