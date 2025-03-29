@@ -7,7 +7,7 @@ import { contractAddresses, abi } from "@/constants/index";
 import NotificationPopup from "@/components/notification-popup";
 import EtherscanInfo from "@/components/etherscan-info";
 import { UserContext } from "@/utils/context";
-import { validateField, performValidation, resetClasses } from "@/utils/helper";
+import { validateField, performValidationNewProject, resetClasses } from "@/utils/helper";
 
 const NewProject = () => {
 	const {
@@ -70,7 +70,7 @@ const NewProject = () => {
 		args.minCapital = parseInt(formData.get("min-capital"));
 
 		// Validate and Convert data.
-		const result = performValidation(args);
+		const result = performValidationNewProject(args);
 		if (!result) {
 			notifyUser("Inputs not valid", "error");
 

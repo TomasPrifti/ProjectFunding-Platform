@@ -1,6 +1,6 @@
 "use client"
 
-import { ethers, formatUnits } from "ethers";
+import { ethers } from "ethers";
 import Form from "next/form"
 import { useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState, useActionState, useRef } from "react";
@@ -8,10 +8,10 @@ import { contractAddresses, abi } from "@/constants/index";
 import { UserContext } from "@/utils/context";
 import Project from "@/components/project";
 import NotificationPopup from "@/components/notification-popup";
-import EtherscanInfo from "@/components/etherscan-info";
 import Loader from '@/components/loader';
+import { validateField, performValidationCreateTransaction, resetClasses } from "@/utils/helper";
 
-const GetProject = () => {
+const getProjectTransactions = () => {
 	const {
 		user,
 		setUser
@@ -19,11 +19,8 @@ const GetProject = () => {
 
 	const searchParams = useSearchParams();
 	const [project, setProject] = useState(null);
-	const [usdt, setUsdt] = useState(null);
 	const [loading, setLoading] = useState(true);
 
-	const buttonLabel = user?.address ? "Fund Project" : "NOT CONNECTED";
-	const buttonClass = user?.address ? "" : "error";
 	const [showNotificationPopup, setShowNotificationPopup] = useState(false);
 	const notificationText = useRef("");
 	const notificationClasses = useRef("");
@@ -67,17 +64,13 @@ const GetProject = () => {
 				contract: project,
 				address: project.target,
 				name: await project.getName(),
-				description: await project.getDescription(),
-				minCapital: await project.getMinCapital(),
 				owner: await project.getOwner(),
 				currentBalance: await project.getUSDTBalance(),
-				myCapitalInvested: await project.getMyCapitalInvested(),
 				transactionCount: await project.getTransactionCount(),
-				capitalLocked: await project.getCapitalLocked(),
+				capitalLocked: await project.getCapitalLocked()
 			};
 			obj.capitalAvailable = obj.currentBalance - obj.capitalLocked;
 
-			setUsdt(usdt);
 			setProject(obj);
 		} catch (error) {
 			console.error("Error in contract retrieved:", error);
@@ -86,7 +79,7 @@ const GetProject = () => {
 		}
 	}
 
-	const fundProject = async (previousState, formData) => {
+	const createTransaction = async (previousState, formData) => {
 		if (typeof window.ethereum === "undefined") {
 			console.error("MetaMask doesn't exist.");
 			notifyUser("MetaMask doesn't exist.", "error");
@@ -96,32 +89,37 @@ const GetProject = () => {
 			};
 		}
 
-		// Define the parameters to fund the Project.
-		const args = {
-			capitalToInvest: formData.get("capital-to-invest"),
-		};
-
-		// Validation.
-		const inputField = document.getElementById('capital-to-invest');
-		inputField.className = "valid";
-		if (!args.capitalToInvest || args.capitalToInvest < 1 || !project.minCapital || args.capitalToInvest < parseInt(formatUnits(project.minCapital, 6))) {
-			notifyUser("Inputs not valid", "error");
-			inputField.className = "error";
+		if (user.signer.address !== project.owner) {
+			console.error("Only the owner is able to create a transaction");
+			notifyUser("Only the owner is able to create a transaction", "error");
 
 			return {
 				formData,
 			};
 		}
 
-		args.capitalToInvest = args.capitalToInvest * 10 ** 6; // Conversion in USDT.
+		// Define the parameters to create a new Transaction.
+		const args = {
+			destination: formData.get("destination"),
+			amount: formData.get("amount"),
+			capitalAvailable: project.capitalAvailable,
+		};
+
+		// Validate and Convert data.
+		const result = performValidationCreateTransaction(args);
+		if (!result) {
+			notifyUser("Inputs not valid", "error");
+
+			return {
+				formData,
+			};
+		}
 
 		try {
-			// Approving user's allowance.
-			await usdt.approve(project.address, args.capitalToInvest);
-
 			// Sending transaction.
-			const transactionResponse = await project.contract.fundProject(
-				args.capitalToInvest,
+			const transactionResponse = await project.contract.createTransaction(
+				args.destination,
+				args.amount,
 			);
 
 			// Awaiting confirmations.
@@ -137,32 +135,24 @@ const GetProject = () => {
 
 		// Updating Project's information.
 		project.currentBalance = await project.contract.getUSDTBalance();
-		project.myCapitalInvested = await project.contract.getMyCapitalInvested();
+		project.capitalLocked = await project.contract.getCapitalLocked();
+		project.capitalAvailable = project.currentBalance - project.capitalLocked;
+		project.transactionCount = await project.contract.getTransactionCount();
 		setProject(project);
 
 		// Updating User's information.
 		user.balanceETH = await user.provider.getBalance(user.address);
-		user.balanceUSDT = await usdt.balanceOf(user.address);
 		setUser({
 			...user,
 			balanceETH: user.balanceETH,
-			balanceUSDT: user.balanceUSDT,
 		});
 
-		inputField.className = "";
-		notifyUser("Project funded successfully", "success");
+		resetClasses();
+		notifyUser("Transaction created successfully", "success");
 
 		return {
 			formData: new FormData(),
 		};
-	}
-
-	const validateValue = (event) => {
-		const inputValue = parseInt(event.target.value);
-		event.target.className = "valid";
-		if (!inputValue || inputValue < 1 || !project.minCapital || inputValue < parseInt(formatUnits(project.minCapital, 6))) {
-			event.target.className = "error";
-		}
 	}
 
 	useEffect(() => {
@@ -174,37 +164,40 @@ const GetProject = () => {
 		getProjectData(address);
 	}, [user?.chainId]);
 
-	const [state, formAction] = useActionState(fundProject, {
+	const [state, formAction] = useActionState(createTransaction, {
 		formData: new FormData(),
 	});
 
 	return (
-		<div className="get-project">
+		<div className="get-project-transactions">
 			{user?.address ? (
 				<>
 					{loading && <Loader /> || (
 						project ? (
 							<>
-								<Project key={project.address} project={project} view="full" />
+								<Project key={project.address} project={project} view="reduced" />
 
-								<Form action={formAction} className="fields">
-									<div>
-										<p><span>I've invested:</span> {formatUnits(project.myCapitalInvested, 6)} USDT</p>
+								{user.signer.address === project.owner && (
+									<Form action={formAction} className="fields">
+										<div>
+											<div className="field field-destination">
+												<label htmlFor="destination">Specify destination:</label>
+												<input type="text" id="destination" name="destination" onChange={validateField} defaultValue={state.formData.get("destination")} />
+											</div>
 
-										<div className="field field-capital-to-invest">
-											<label htmlFor="capital-to-invest">How much USDT would you like to invest?</label>
-											<input type="number" id="capital-to-invest" name="capital-to-invest" step="1" min="1" onChange={validateValue} defaultValue={state.formData.get("capital-to-invest")} />
+											<div className="field field-amount">
+												<label htmlFor="amount">How much USDT would you like to send?</label>
+												<input type="number" id="amount" name="amount" step="1" min="1" onChange={(event) => validateField(event, project.capitalAvailable)} defaultValue={state.formData.get("amount")} />
+											</div>
 										</div>
-									</div>
 
-									<button type="submit" className={buttonClass} disabled={!user?.address}>{buttonLabel}</button>
-								</Form>
+										<button type="submit" disabled={!user?.address}>Create Transaction</button>
+									</Form>
+								)}
 
 								<NotificationPopup showNotificationPopup={showNotificationPopup} setShowNotificationPopup={setShowNotificationPopup} classes={notificationClasses.current}>
 									{notificationText.current}
 								</NotificationPopup>
-
-								<EtherscanInfo contractAddress={project.address} view="transactions" />
 							</>
 						) : (
 							<h1>This project doesn't exist !</h1>
@@ -212,10 +205,10 @@ const GetProject = () => {
 					)}
 				</>
 			) : (
-				<h2>Connect wallet to see the project</h2>
+				<h2>Connect wallet to see the transactions</h2>
 			)}
 		</div>
 	);
 }
 
-export default GetProject;
+export default getProjectTransactions;

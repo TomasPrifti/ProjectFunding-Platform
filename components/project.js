@@ -7,6 +7,10 @@ const Project = ({ project, view = "card" }) => {
 		pathname: '/getProject',
 		query: { address: project.address },
 	};
+	const hrefDataTransactions = {
+		pathname: '/getProjectTransactions',
+		query: { address: project.address },
+	};
 
 	return (
 		<>
@@ -20,7 +24,7 @@ const Project = ({ project, view = "card" }) => {
 					<div className="details">
 						<p><span>Number of transactions:</span> {project.transactionCount}</p>
 						<p><span>Minimum capital to invest:</span> {formatUnits(project.minCapital, 6)} USDT</p>
-						<p><span>Current balance:</span> {formatUnits(project.currentBalance, 6)} USDT</p>
+						<p className="current-balance"><span>Current balance:</span> {formatUnits(project.currentBalance, 6)} USDT</p>
 					</div>
 				</Link>
 			)}
@@ -40,10 +44,45 @@ const Project = ({ project, view = "card" }) => {
 							<p><span>Address:</span> {project.address}</p>
 						</div>
 
-						<p><span>Number of transactions:</span> {project.transactionCount}</p>
+						<div>
+							<p><span>Number of transactions:</span> {project.transactionCount}</p>
+							<Link href={hrefDataTransactions}>
+								See all Transactions
+							</Link>
+						</div>
 
 						<p><span>Minimum capital to invest:</span> {formatUnits(project.minCapital, 6)} USDT</p>
-						<p><span>Current balance:</span> {formatUnits(project.currentBalance, 6)} USDT</p>
+
+						<span></span>
+
+						<div>
+							<p><span>Capital locked:</span> {formatUnits(project.capitalLocked, 6)} USDT</p>
+							<p><span>Capital available:</span> {formatUnits(project.currentBalance - project.capitalLocked, 6)} USDT</p>
+						</div>
+
+						<p className="current-balance"><span>Current balance:</span> {formatUnits(project.currentBalance, 6)} USDT</p>
+					</div>
+				</div>
+			)}
+			{view === "reduced" && (
+				<div className="project view-reduced">
+					<h1 className="name">{project.name}</h1>
+
+					<div className="details">
+						<p><span>Owner:</span> {project.owner}</p>
+
+						<span></span>
+
+						<p><span>Number of transactions:</span> {project.transactionCount}</p>
+
+						<span></span>
+
+						<div>
+							<p><span>Capital locked:</span> {formatUnits(project.capitalLocked, 6)} USDT</p>
+							<p><span>Capital available:</span> {formatUnits(project.capitalAvailable, 6)} USDT</p>
+						</div>
+
+						<p className="current-balance"><span>Current balance:</span> {formatUnits(project.currentBalance, 6)} USDT</p>
 					</div>
 				</div>
 			)}

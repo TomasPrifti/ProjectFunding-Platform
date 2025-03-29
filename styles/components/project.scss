@@ -14,7 +14,7 @@
 
 	.details {
 
-		@apply space-y-2 text-base text-gray-700;
+		@apply text-base text-gray-700;
 
 		span {
 
@@ -34,7 +34,7 @@
 
 		.details {
 
-			@apply mt-10;
+			@apply mt-10 space-y-2;
 		}
 	}
 
@@ -68,6 +68,37 @@
 		.details {
 
 			@apply grid grid-cols-2 gap-6;
+
+			a {
+
+				@apply text-xl font-semibold text-blue-600;
+				@apply hover:text-blue-800;
+			}
+
+			.current-balance {
+
+				@apply my-auto text-xl;
+			}
+		}
+	}
+
+	&.view-reduced {
+
+		@apply p-8;
+
+		.name {
+
+			@apply my-4 text-6xl;
+		}
+
+		.details {
+
+			@apply text-lg grid grid-cols-2 gap-6;
+
+			.current-balance {
+
+				@apply my-auto text-xl;
+			}
 		}
 	}
 }
