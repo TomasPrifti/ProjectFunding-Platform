@@ -1,0 +1,35 @@
+.transaction {
+
+	&.view-row {
+
+		@apply px-4 py-2 grid grid-cols-2 border border-black;
+	}
+
+	.actions {
+
+		@apply flex justify-center items-center gap-12;
+
+		button {
+
+			@apply block w-fit text-2xl font-semibold p-4 rounded-2xl border-2 text-white;
+
+			&.execute {
+
+				@apply border-blue-800 bg-blue-500;
+				@apply hover:bg-blue-600;
+			}
+
+			&.revoke {
+
+				@apply border-red-800 bg-red-500;
+				@apply hover:bg-red-600;
+			}
+
+			&.sign {
+
+				@apply border-green-800 bg-green-500;
+				@apply hover:bg-green-600;
+			}
+		}
+	}
+}

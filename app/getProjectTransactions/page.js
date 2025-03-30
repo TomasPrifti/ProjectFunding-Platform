@@ -1,12 +1,14 @@
 "use client"
 
-import { ethers } from "ethers";
+import { ethers, formatUnits } from "ethers";
 import Form from "next/form"
+import Image from 'next/image';
 import { useSearchParams } from "next/navigation";
 import { useContext, useEffect, useState, useActionState, useRef } from "react";
-import { contractAddresses, abi } from "@/constants/index";
+import { abi } from "@/constants/index";
 import { UserContext } from "@/utils/context";
 import Project from "@/components/project";
+import Transaction from "@/components/transaction";
 import NotificationPopup from "@/components/notification-popup";
 import Loader from '@/components/loader';
 import { validateField, performValidationCreateTransaction, resetClasses } from "@/utils/helper";
@@ -57,7 +59,6 @@ const getProjectTransactions = () => {
 		}
 		// Retrieve the contract Project already deployed.
 		const project = new ethers.Contract(address, abi[user.chainId]["Project"], signer);
-		const usdt = new ethers.Contract(contractAddresses[user.chainId]["USDT"], abi[user.chainId]["USDT"], signer);
 
 		try {
 			const obj = {
@@ -67,9 +68,28 @@ const getProjectTransactions = () => {
 				owner: await project.getOwner(),
 				currentBalance: await project.getUSDTBalance(),
 				transactionCount: await project.getTransactionCount(),
-				capitalLocked: await project.getCapitalLocked()
+				capitalLocked: await project.getCapitalLocked(),
+				financiers: (await project.getFinanciers()).toArray()
 			};
 			obj.capitalAvailable = obj.currentBalance - obj.capitalLocked;
+
+			// Retrieving all the project's transactions.
+			const tempArray = [];
+			let rawTransaction;
+			for (let index = 0; index < obj.transactionCount; index++) {
+				rawTransaction = await project.getTransaction(index);
+
+				const transaction = {
+					destination: rawTransaction[0],
+					amount: rawTransaction[1],
+					executed: rawTransaction[2],
+					numConfirmations: parseInt(rawTransaction[3]),
+					status: parseInt(rawTransaction[4]),
+					statusLabel: await project.TransactionStatusLabel(rawTransaction[4])
+				}
+				tempArray.push(transaction);
+			}
+			obj.transactions = tempArray;
 
 			setProject(obj);
 		} catch (error) {
@@ -194,6 +214,28 @@ const getProjectTransactions = () => {
 										<button type="submit" disabled={!user?.address}>Create Transaction</button>
 									</Form>
 								)}
+
+								<div className="container-transactions">
+									<div className="title-container">
+										<h2>Transactions ({project.transactionCount})</h2>
+
+										<Image
+											src="/reload.png"
+											width={35}
+											height={35}
+											alt="Reload Transactions History"
+										/* onClick={getEtherscanInfoTransactions} */
+										/>
+									</div>
+
+									<div className="list-transactions">
+										{project.transactions.map((transaction, index) => {
+											return (
+												<Transaction key={index} transaction={transaction} project={project} view="row" />
+											);
+										})}
+									</div>
+								</div>
 
 								<NotificationPopup showNotificationPopup={showNotificationPopup} setShowNotificationPopup={setShowNotificationPopup} classes={notificationClasses.current}>
 									{notificationText.current}
