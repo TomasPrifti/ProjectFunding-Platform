@@ -150,11 +150,11 @@ const Transaction = ({ transactionId, transaction, project, setProject, view = "
 			{view === "row" && (
 				<div id={transactionId} className="transaction view-row">
 					<div className="details">
-						<p><span>#</span>{transactionId}</p>
+						<p className="number"><span>#</span>{transactionId}</p>
 						<p><span>Destination: </span>{transaction.destination}</p>
 						<p><span>Amount: </span>{formatUnits(transaction.amount, 6)} USDT</p>
 						<p><span>Number of confirmations: </span>{transaction.numConfirmations}</p>
-						<p><span>Status: </span>{transaction.statusLabel}</p>
+						<p className={`status ${transaction.statusLabel.toLowerCase()}`}><span>Status: </span>{transaction.statusLabel}</p>
 					</div>
 
 					{transaction.status === 0 && (
@@ -169,10 +169,14 @@ const Transaction = ({ transactionId, transaction, project, setProject, view = "
 								!transaction.isSignedByMe && (
 									<button className="sign" onClick={(event) => signTransaction(event, transactionId)}>Sign Transaction</button>
 								) || (
-									<p>You have signed</p>
+									<p className="text-signed">You have signed</p>
 								)
 							)}
 						</div>
+					) || (
+						transaction.isSignedByMe && (
+							<p className="text-signed">You have signed</p>
+						)
 					)}
 				</div>
 			)}

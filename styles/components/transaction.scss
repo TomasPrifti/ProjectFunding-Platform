@@ -5,6 +5,46 @@
 		@apply px-4 py-2 grid grid-cols-2 border border-black;
 	}
 
+	.details {
+
+		@apply text-lg;
+
+		.number {
+
+			@apply font-bold;
+		}
+
+		.status {
+
+			@apply font-bold;
+
+			span {
+
+				@apply font-normal text-black;
+			}
+
+			&.executed {
+
+				@apply text-blue-600;
+			}
+
+			&.revoked {
+
+				@apply text-red-600;
+			}
+
+			&.pending {
+
+				@apply text-green-600;
+			}
+		}
+	}
+
+	p.text-signed {
+
+		@apply m-auto text-xl font-semibold text-green-600;
+	}
+
 	.actions {
 
 		@apply flex justify-center items-center gap-12;
@@ -17,7 +57,7 @@
 
 				@apply border-blue-800 bg-blue-500;
 				@apply hover:bg-blue-600;
-			
+
 				&[disabled] {
 
 					@apply bg-blue-600 opacity-50;
