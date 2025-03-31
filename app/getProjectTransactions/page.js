@@ -85,7 +85,8 @@ const getProjectTransactions = () => {
 					executed: rawTransaction[2],
 					numConfirmations: parseInt(rawTransaction[3]),
 					status: parseInt(rawTransaction[4]),
-					statusLabel: await project.TransactionStatusLabel(rawTransaction[4])
+					statusLabel: await project.TransactionStatusLabel(rawTransaction[4]),
+					isSignedByMe: await project.isTransactionSignedByMe(index)
 				}
 				tempArray.push(transaction);
 			}
@@ -167,7 +168,8 @@ const getProjectTransactions = () => {
 			executed: rawTransaction[2],
 			numConfirmations: parseInt(rawTransaction[3]),
 			status: parseInt(rawTransaction[4]),
-			statusLabel: await project.contract.TransactionStatusLabel(rawTransaction[4])
+			statusLabel: await project.contract.TransactionStatusLabel(rawTransaction[4]),
+			isSignedByMe: await project.contract.isTransactionSignedByMe(project.transactionCount - 1)
 		}
 		project.transactions.push(transaction);
 
@@ -189,11 +191,7 @@ const getProjectTransactions = () => {
 	}
 
 	const reloadTransactions = async () => {
-		const newTransactionCount = parseInt(await project.contract.getTransactionCount());
-		if (project.transactionCount === newTransactionCount) {
-			return;
-		}
-		project.transactionCount = newTransactionCount;
+		project.transactionCount = parseInt(await project.contract.getTransactionCount());
 
 		// Retrieving all the project's transactions.
 		const tempArray = [];
@@ -207,7 +205,8 @@ const getProjectTransactions = () => {
 				executed: rawTransaction[2],
 				numConfirmations: parseInt(rawTransaction[3]),
 				status: parseInt(rawTransaction[4]),
-				statusLabel: await project.contract.TransactionStatusLabel(rawTransaction[4])
+				statusLabel: await project.contract.TransactionStatusLabel(rawTransaction[4]),
+				isSignedByMe: await project.contract.isTransactionSignedByMe(index)
 			}
 			tempArray.push(transaction);
 		}
