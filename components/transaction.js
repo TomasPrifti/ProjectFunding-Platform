@@ -61,7 +61,44 @@ const Transaction = ({ transactionId, transaction, project, setProject, view = "
 	}
 
 	const revokeTransaction = async (event, transactionId) => {
-		console.log('revoke');
+		if (!isOwner()) {
+			notifyUser("Error in revoking transaction", "error");
+			return;
+		}
+
+		try {
+			// Sending transaction.
+			const transactionResponse = await project.contract.revokeTransaction(
+				transactionId,
+			);
+
+			// Awaiting confirmations.
+			const transactionReceipt = await transactionResponse.wait();
+		} catch (error) {
+			console.error("Error in revoking transaction:", error);
+			notifyUser("Error in revoking transaction", "error");
+			return;
+		}
+
+		// Updating User's information.
+		user.balanceETH = await user.provider.getBalance(user.address);
+		setUser({
+			...user,
+			balanceETH: user.balanceETH,
+		});
+
+		// Updating Project's information.
+		project.currentBalance = await project.contract.getUSDTBalance();
+		project.capitalLocked = await project.contract.getCapitalLocked();
+		project.capitalAvailable = project.currentBalance - project.capitalLocked;
+
+		// Updating Project's transaction information.
+		const rawTransaction = await project.contract.getTransaction(transactionId);
+		project.transactions[transactionId].status = parseInt(rawTransaction[4]);
+		project.transactions[transactionId].statusLabel = await project.contract.TransactionStatusLabel(rawTransaction[4]);
+
+		setProject({ ...project });
+		notifyUser("Transaction revoked successfully", "success");
 	}
 
 	const signTransaction = async (event, transactionId) => {
