@@ -38,6 +38,9 @@ const EtherscanInfo = ({ contractAddress, view = "contract" }) => {
 	}
 
 	const getEtherscanInfoTransactions = async () => {
+		if(!user || !user.provider) {
+			return;
+		}
 		const provider = user.provider;
 
 		// Creating the url to request data to Etherscan.
