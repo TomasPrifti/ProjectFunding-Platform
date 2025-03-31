@@ -81,7 +81,7 @@ const Wallet = () => {
 			{user && user.address ? (
 				<div className="logged">
 					<div className="tokens">
-						<div>{formatEther(user.balanceETH).slice(0, 8)} ETH</div>
+						<div>{formatEther(user.balanceETH).slice(0, 9)} ETH</div>
 						<div>{formatUnits(user.balanceUSDT, 6)} USDT</div>
 					</div>
 
