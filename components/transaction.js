@@ -2,7 +2,7 @@ import { formatUnits } from "ethers";
 import { useContext } from "react";
 import { UserContext } from "@/utils/context";
 
-const Transaction = ({ transaction, project, view = "row" }) => {
+const Transaction = ({ transactionId, transaction, project, view = "row" }) => {
 	const {
 		user,
 		setUser
@@ -31,12 +31,12 @@ const Transaction = ({ transaction, project, view = "row" }) => {
 	return (
 		<>
 			{view === "row" && (
-				<div className="transaction view-row">
+				<div id={transactionId} className="transaction view-row">
 					<div className="details">
+						<p><span>#</span>{transactionId}</p>
 						<p><span>Destination: </span>{transaction.destination}</p>
 						<p><span>Amount: </span>{formatUnits(transaction.amount, 6)} USDT</p>
-						<p><span>Executed: </span>{transaction.executed ? "Yes" : "No"}</p>
-						<p><span>Number of confirmations: #</span>{transaction.numConfirmations}</p>
+						<p><span>Number of confirmations: </span>{transaction.numConfirmations}</p>
 						<p><span>Status: </span>{transaction.statusLabel}</p>
 					</div>
 

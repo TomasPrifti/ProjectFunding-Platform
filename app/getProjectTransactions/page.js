@@ -67,7 +67,7 @@ const getProjectTransactions = () => {
 				name: await project.getName(),
 				owner: await project.getOwner(),
 				currentBalance: await project.getUSDTBalance(),
-				transactionCount: await project.getTransactionCount(),
+				transactionCount: parseInt(await project.getTransactionCount()),
 				capitalLocked: await project.getCapitalLocked(),
 				financiers: (await project.getFinanciers()).toArray()
 			};
@@ -157,7 +157,20 @@ const getProjectTransactions = () => {
 		project.currentBalance = await project.contract.getUSDTBalance();
 		project.capitalLocked = await project.contract.getCapitalLocked();
 		project.capitalAvailable = project.currentBalance - project.capitalLocked;
-		project.transactionCount = await project.contract.getTransactionCount();
+		project.transactionCount = parseInt(await project.contract.getTransactionCount());
+
+		// Updating Project's transactions.
+		const rawTransaction = await project.contract.getTransaction(project.transactionCount - 1);
+		const transaction = {
+			destination: rawTransaction[0],
+			amount: rawTransaction[1],
+			executed: rawTransaction[2],
+			numConfirmations: parseInt(rawTransaction[3]),
+			status: parseInt(rawTransaction[4]),
+			statusLabel: await project.contract.TransactionStatusLabel(rawTransaction[4])
+		}
+		project.transactions.push(transaction);
+
 		setProject(project);
 
 		// Updating User's information.
@@ -173,6 +186,34 @@ const getProjectTransactions = () => {
 		return {
 			formData: new FormData(),
 		};
+	}
+
+	const reloadTransactions = async () => {
+		const newTransactionCount = parseInt(await project.contract.getTransactionCount());
+		if (project.transactionCount === newTransactionCount) {
+			return;
+		}
+		project.transactionCount = newTransactionCount;
+
+		// Retrieving all the project's transactions.
+		const tempArray = [];
+		let rawTransaction;
+		for (let index = 0; index < project.transactionCount; index++) {
+			rawTransaction = await project.contract.getTransaction(index);
+
+			const transaction = {
+				destination: rawTransaction[0],
+				amount: rawTransaction[1],
+				executed: rawTransaction[2],
+				numConfirmations: parseInt(rawTransaction[3]),
+				status: parseInt(rawTransaction[4]),
+				statusLabel: await project.contract.TransactionStatusLabel(rawTransaction[4])
+			}
+			tempArray.push(transaction);
+		}
+		project.transactions = tempArray;
+
+		setProject({ ...project });
 	}
 
 	useEffect(() => {
@@ -197,7 +238,7 @@ const getProjectTransactions = () => {
 							<>
 								<Project key={project.address} project={project} view="reduced" />
 
-								{user.signer.address === project.owner && (
+								{user.signer.address === project.owner && parseInt(project.capitalAvailable) !== 0 && (
 									<Form action={formAction} className="fields">
 										<div>
 											<div className="field field-destination">
@@ -224,14 +265,14 @@ const getProjectTransactions = () => {
 											width={35}
 											height={35}
 											alt="Reload Transactions History"
-										/* onClick={getEtherscanInfoTransactions} */
+											onClick={reloadTransactions}
 										/>
 									</div>
 
 									<div className="list-transactions">
 										{project.transactions.map((transaction, index) => {
 											return (
-												<Transaction key={index} transaction={transaction} project={project} view="row" />
+												<Transaction key={index} transactionId={index} transaction={transaction} project={project} view="row" />
 											);
 										})}
 									</div>

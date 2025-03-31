@@ -67,7 +67,7 @@
 
 		.list-transactions {
 
-			@apply max-h-80 overflow-y-scroll rounded-b-lg border border-black;
+			@apply max-h-[30rem] overflow-y-scroll rounded-b-lg border border-black;
 
 			&::-webkit-scrollbar-track {
 

@@ -77,6 +77,14 @@ const Project = ({ project, view = "card" }) => {
 
 						<span></span>
 
+						{project.financiers.length !== 0 && (
+							<p><span>Number of confirmations requested to execute:</span> {project.financiers.length}</p>
+						) || (
+								<p><span>There aren't financiers yet</span></p>
+							)}
+
+						<span></span>
+
 						<div>
 							<p><span>Capital locked:</span> {formatUnits(project.capitalLocked, 6)} USDT</p>
 							<p><span>Capital available:</span> {formatUnits(project.capitalAvailable, 6)} USDT</p>
