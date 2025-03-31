@@ -1,8 +1,9 @@
 import { formatUnits } from "ethers";
-import { useContext, useRef, useState, useEffect } from "react";
+import { useContext, useRef, useState } from "react";
 import { UserContext } from "@/utils/context";
+import NotificationPopup from "@/components/notification-popup";
 
-const Transaction = ({ transactionId, transaction, project, view = "row" }) => {
+const Transaction = ({ transactionId, transaction, project, setProject, view = "row" }) => {
 	const {
 		user,
 		setUser
@@ -12,8 +13,6 @@ const Transaction = ({ transactionId, transaction, project, view = "row" }) => {
 	const notificationText = useRef("");
 	const notificationClasses = useRef("");
 
-	const isSigned = useRef(transaction.isSignedByMe);
-
 	const notifyUser = (text = "Something happen", classes = "") => {
 		setShowNotificationPopup(true);
 		notificationText.current = text;
@@ -21,7 +20,44 @@ const Transaction = ({ transactionId, transaction, project, view = "row" }) => {
 	}
 
 	const executeTransaction = async (event, transactionId) => {
-		console.log('execute');
+		if (!isOwner() || transaction.numConfirmations !== project.financiers.length) {
+			notifyUser("Error in executing transaction", "error");
+			return;
+		}
+
+		try {
+			// Sending transaction.
+			const transactionResponse = await project.contract.executeTransaction(
+				transactionId,
+			);
+
+			// Awaiting confirmations.
+			const transactionReceipt = await transactionResponse.wait();
+		} catch (error) {
+			console.error("Error in executing transaction:", error);
+			notifyUser("Error in executing transaction", "error");
+			return;
+		}
+
+		// Updating User's information.
+		user.balanceETH = await user.provider.getBalance(user.address);
+		setUser({
+			...user,
+			balanceETH: user.balanceETH,
+		});
+
+		// Updating Project's information.
+		project.currentBalance = await project.contract.getUSDTBalance();
+		project.capitalLocked = await project.contract.getCapitalLocked();
+		project.capitalAvailable = project.currentBalance - project.capitalLocked;
+
+		// Updating Project's transaction information.
+		const rawTransaction = await project.contract.getTransaction(transactionId);
+		project.transactions[transactionId].status = parseInt(rawTransaction[4]);
+		project.transactions[transactionId].statusLabel = await project.contract.TransactionStatusLabel(rawTransaction[4]);
+
+		setProject({ ...project });
+		notifyUser("Transaction executed successfully", "success");
 	}
 
 	const revokeTransaction = async (event, transactionId) => {
@@ -29,7 +65,8 @@ const Transaction = ({ transactionId, transaction, project, view = "row" }) => {
 	}
 
 	const signTransaction = async (event, transactionId) => {
-		if (!isFinancier() || isSigned.current) {
+		if (!isFinancier() || transaction.isSignedByMe) {
+			notifyUser("Error in signing transaction", "error");
 			return;
 		}
 
@@ -42,8 +79,8 @@ const Transaction = ({ transactionId, transaction, project, view = "row" }) => {
 			// Awaiting confirmations.
 			const transactionReceipt = await transactionResponse.wait();
 		} catch (error) {
-			console.error("Error in sending transaction:", error);
-			notifyUser("Error in sending transaction", "error");
+			console.error("Error in signing transaction:", error);
+			notifyUser("Error in signing transaction", "error");
 			return;
 		}
 
@@ -54,8 +91,13 @@ const Transaction = ({ transactionId, transaction, project, view = "row" }) => {
 			balanceETH: user.balanceETH,
 		});
 
-		transaction.numConfirmations++;
-		isSigned.current = true;
+		// Updating Project's transactions.
+		const rawTransaction = await project.contract.getTransaction(transactionId);
+		project.transactions[transactionId].numConfirmations = parseInt(rawTransaction[3]);
+		project.transactions[transactionId].isSignedByMe = await project.contract.isTransactionSignedByMe(transactionId);
+
+		setProject(project);
+		notifyUser("Transaction signed successfully", "success");
 	}
 
 	const isOwner = () => {
@@ -65,10 +107,6 @@ const Transaction = ({ transactionId, transaction, project, view = "row" }) => {
 	const isFinancier = () => {
 		return user.signer.address !== project.owner && project.financiers.includes(user.signer.address);
 	}
-
-	useEffect(() => {
-		isSigned.current = transaction.isSignedByMe;
-	}, [transaction.isSignedByMe])
 
 	return (
 		<>
@@ -86,12 +124,12 @@ const Transaction = ({ transactionId, transaction, project, view = "row" }) => {
 						<div className="actions">
 							{isOwner() && (
 								<>
-									<button className="execute" onClick={(event) => executeTransaction(event, transactionId)}>Execute</button>
+									<button className="execute" onClick={(event) => executeTransaction(event, transactionId)} disabled={transaction.numConfirmations !== project.financiers.length}>Execute</button>
 									<button className="revoke" onClick={(event) => revokeTransaction(event, transactionId)}>Revoke</button>
 								</>
 							)}
 							{isFinancier() && (
-								!isSigned.current && (
+								!transaction.isSignedByMe && (
 									<button className="sign" onClick={(event) => signTransaction(event, transactionId)}>Sign Transaction</button>
 								) || (
 									<p>You have signed</p>
@@ -101,6 +139,10 @@ const Transaction = ({ transactionId, transaction, project, view = "row" }) => {
 					)}
 				</div>
 			)}
+
+			<NotificationPopup showNotificationPopup={showNotificationPopup} setShowNotificationPopup={setShowNotificationPopup} classes={notificationClasses.current}>
+				{notificationText.current}
+			</NotificationPopup>
 		</>
 	);
 };

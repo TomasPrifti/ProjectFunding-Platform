@@ -1,6 +1,6 @@
 "use client"
 
-import { ethers, formatUnits } from "ethers";
+import { ethers } from "ethers";
 import Form from "next/form"
 import Image from 'next/image';
 import { useSearchParams } from "next/navigation";
@@ -271,7 +271,7 @@ const getProjectTransactions = () => {
 									<div className="list-transactions">
 										{project.transactions.map((transaction, index) => {
 											return (
-												<Transaction key={index} transactionId={index} transaction={transaction} project={project} view="row" />
+												<Transaction key={index} transactionId={index} transaction={transaction} project={project} setProject={setProject} view="row" />
 											);
 										})}
 									</div>

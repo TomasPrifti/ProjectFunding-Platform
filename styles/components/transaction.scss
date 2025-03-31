@@ -17,6 +17,11 @@
 
 				@apply border-blue-800 bg-blue-500;
 				@apply hover:bg-blue-600;
+			
+				&[disabled] {
+
+					@apply bg-blue-600 opacity-50;
+				}
 			}
 
 			&.revoke {
