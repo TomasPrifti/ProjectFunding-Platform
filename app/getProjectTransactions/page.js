@@ -68,10 +68,16 @@ const getProjectTransactions = () => {
 				owner: await project.getOwner(),
 				currentBalance: await project.getUSDTBalance(),
 				transactionCount: parseInt(await project.getTransactionCount()),
-				capitalLocked: await project.getCapitalLocked(),
-				financiers: (await project.getFinanciers()).toArray()
+				capitalLocked: await project.getCapitalLocked()
 			};
 			obj.capitalAvailable = obj.currentBalance - obj.capitalLocked;
+
+			const financiers = (await project.getFinanciers()).toArray();
+			const index = financiers.indexOf(obj.owner);
+			if (index > -1) {
+				financiers.splice(index, 1);
+			}
+			obj.financiers = financiers;
 
 			// Retrieving all the project's transactions.
 			const tempArray = [];
