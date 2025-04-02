@@ -116,16 +116,20 @@ const GetProject = () => {
 		args.capitalToInvest = args.capitalToInvest * 10 ** 6; // Conversion in USDT.
 
 		try {
+			let transactionResponse;
+			let transactionReceipt;
+
 			// Approving user's allowance.
-			await usdt.approve(project.address, args.capitalToInvest);
+			transactionResponse = await usdt.approve(project.address, args.capitalToInvest);
+			// Awaiting confirmations.
+			transactionReceipt = await transactionResponse.wait();
 
 			// Sending transaction.
-			const transactionResponse = await project.contract.fundProject(
+			transactionResponse = await project.contract.fundProject(
 				args.capitalToInvest,
 			);
-
 			// Awaiting confirmations.
-			const transactionReceipt = await transactionResponse.wait();
+			transactionReceipt = await transactionResponse.wait();
 		} catch (error) {
 			console.error("Error in sending transaction:", error);
 			notifyUser("Error in sending transaction", "error");
