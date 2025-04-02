@@ -40,10 +40,6 @@ jspm_packages
 # VSCode
 .vscode
 
-# Constants
-constants/abi.json
-constants/contractAddresses.json
-
 # Env
 .env
 
