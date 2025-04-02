@@ -46,3 +46,6 @@ constants/contractAddresses.json
 
 # Env
 .env
+
+# Out
+out
